@@ -256,7 +256,7 @@ def train_model_comprehensive(family: str, X: np.ndarray, y: np.ndarray,
     logger.info(f"[{family}] Task={spec.task}, Objective={spec.objective}, Has weights={sample_weights is not None}, Has groups={group_sizes is not None}")
     
     # Get runtime policy for this family (single source of truth)
-    from common.runtime_policy import get_policy
+    from TRAINING.common.runtime_policy import get_policy
     policy = get_policy(family)
     
     # Log policy decision
@@ -566,6 +566,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
             logger.debug(f"Failed to create fallback identity for TRAINING: {e}")
     
     for j, target in enumerate(targets, 1):
+        X = None  # Initialize before training; used by snapshot/metrics checks below
         logger.info(f"🎯 [{j}/{len(targets)}] Training models for target: {target}")
 
         # Emit target start event for dashboard monitoring
@@ -885,7 +886,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
         # CRITICAL: Run preflight validation BEFORE both CROSS_SECTIONAL and SYMBOL_SPECIFIC paths
         # This ensures invalid families are filtered out for all routes
         from TRAINING.training_strategies.utils import normalize_family_name
-        from common.isolation_runner import TRAINER_MODULE_MAP
+        from TRAINING.common.isolation_runner import TRAINER_MODULE_MAP
         
         # Get canonical family set from registries (must match MODMAP in family_runners.py)
         MODMAP_KEYS = {
@@ -1306,7 +1307,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                             run_identity=effective_run_identity,
                                             model_path=saved_model_path,
                                             features_used=list(feature_names) if feature_names is not None else None,
-                                            n_samples=len(X) if 'X' in locals() else None,
+                                            n_samples=len(X) if X is not None else None,
                                             cohort_id=symbol_cohort_id,
                                             cohort_metadata=symbol_cohort_metadata,
                                         )
@@ -1438,7 +1439,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                             task_type=task_type,
                                             view=View.SYMBOL_SPECIFIC,  # Per-symbol training
                                             n_features=len(feature_names) if feature_names else None,
-                                            n_samples=len(X) if 'X' in locals() else None,
+                                            n_samples=len(X) if X is not None else None,
                                         )
                                         metrics["metric_name"] = "CV Score"  # Add metadata field
                                     except Exception as e:
@@ -2284,7 +2285,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                         strategy_mgr = model_result.get('strategy_manager')
                                         if strategy_mgr and hasattr(strategy_mgr, 'models'):
                                             pred_hashes = []
-                                            X_for_fp = X if 'X' in locals() else None
+                                            X_for_fp = X if X is not None else None
                                             for model_name, model in strategy_mgr.models.items():
                                                 if model is not None and hasattr(model, 'predict') and X_for_fp is not None:
                                                     try:
@@ -2361,7 +2362,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                         models = strategy_manager.models
                         
                         # Import model wrapper for saving compatibility
-                        from common.model_wrapper import wrap_model_for_saving, get_model_saving_info
+                        from TRAINING.common.model_wrapper import wrap_model_for_saving, get_model_saving_info
                         
                         # Save each model component (same as original)
                         for model_name, model in models.items():
@@ -2571,7 +2572,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                     training_features = list(tf)
                             
                             # Get n_samples from X if available
-                            training_n_samples = X.shape[0] if 'X' in locals() and hasattr(X, 'shape') else None
+                            training_n_samples = X.shape[0] if X is not None and hasattr(X, 'shape') else None
                             
                             # Get train_seed from identity or config
                             training_seed = 42
@@ -2616,7 +2617,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                     
                     # Memory hygiene after each family (after saving)
                     try:
-                        from common.threads import hard_cleanup_after_family
+                        from TRAINING.common.threads import hard_cleanup_after_family
                         
                         # Delete model result to free references
                         try:
@@ -2722,7 +2723,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                 ensure_target_structure(output_dir_path, target)
                                 
                                 # Save model (same logic as SYMBOL_SPECIFIC route)
-                                from common.model_wrapper import wrap_model_for_saving, get_model_saving_info
+                                from TRAINING.common.model_wrapper import wrap_model_for_saving, get_model_saving_info
                                 strategy_manager = model_result.get('strategy_manager')
                                 if strategy_manager and hasattr(strategy_manager, 'models'):
                                     models = strategy_manager.models
@@ -2807,7 +2808,7 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
         
         # Memory hygiene after each target (CRITICAL for GPU models between targets)
         try:
-            from common.threads import hard_cleanup_after_family
+            from TRAINING.common.threads import hard_cleanup_after_family
             import gc
             
             # Clean up training data (X, y can be 2-6GB)

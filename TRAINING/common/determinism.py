@@ -301,7 +301,6 @@ def get_deterministic_params(library: str, seed: int, **kwargs) -> Dict[str, Any
         return {
             "objective": kwargs.get("objective", "reg:squarederror"),
             "seed": seed,
-            "seed": seed,
             "seed_per_iteration": True,
             "nthread": 1,
             "tree_method": os.getenv("XGBOOST_TREE_METHOD", "hist"),
