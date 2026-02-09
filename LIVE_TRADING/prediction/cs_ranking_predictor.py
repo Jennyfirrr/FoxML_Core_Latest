@@ -37,8 +37,6 @@ from .predictor import (
     ModelPrediction,
     MultiHorizonPredictor,
 )
-from .confidence import ConfidenceScorer
-
 logger = logging.getLogger(__name__)
 
 # Clip bounds for probit-transformed signal (matches ZScoreStandardizer)
@@ -124,8 +122,9 @@ class CrossSectionalRankingPredictor:
         self.loader = loader
         self.engine = engine
         self.predictor = predictor
-        self.min_universe_size = min_universe_size or get_cfg(
-            "live_trading.cs_ranking.min_universe_size", default=5
+        self.min_universe_size = (
+            min_universe_size if min_universe_size is not None
+            else get_cfg("live_trading.cs_ranking.min_universe_size", default=5)
         )
 
         logger.info(

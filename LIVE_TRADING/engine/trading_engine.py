@@ -704,10 +704,12 @@ class TradingEngine:
 
         # CS ranking pre-prediction: collect and rank all symbols cross-sectionally
         cs_ranked_preds: Dict[str, Any] = {}
+        cs_exclude: set | None = None  # Families to exclude from pointwise prediction
         if self.cs_predictor and self.predictor:
             target = self.targets[0] if self.targets else self.config.default_target
             cs_families = self.cs_predictor.get_cs_families(target)
             if cs_families:
+                cs_exclude = set(cs_families)
                 self._set_stage("prediction")
                 universe: Dict[str, Any] = {}
                 adv_map: Dict[str, float] = {}
@@ -737,7 +739,8 @@ class TradingEngine:
         for symbol in symbols:
             try:
                 decision = self._process_symbol(
-                    symbol, current_time, cs_ranked_preds.get(symbol)
+                    symbol, current_time,
+                    cs_ranked_preds.get(symbol), cs_exclude,
                 )
                 decisions.append(decision)
 
@@ -802,6 +805,7 @@ class TradingEngine:
         symbol: str,
         current_time: datetime,
         cs_predictions: Optional[Any] = None,
+        cs_exclude: set | None = None,
     ) -> TradeDecision:
         """
         Process a single symbol through the pipeline.
@@ -810,6 +814,8 @@ class TradingEngine:
             symbol: Trading symbol
             current_time: Current timestamp
             cs_predictions: Pre-computed CS ranking AllPredictions (optional)
+            cs_exclude: CS family names to exclude from pointwise prediction
+                (these are handled by CrossSectionalRankingPredictor instead)
 
         Returns:
             TradeDecision
@@ -895,6 +901,7 @@ class TradingEngine:
                 symbol=symbol,
                 data_timestamp=current_time,
                 adv=adv,
+                exclude_families=cs_exclude,
             )
         except Exception as e:
             logger.warning(f"Prediction failed for {symbol}: {e}")

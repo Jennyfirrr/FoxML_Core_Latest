@@ -208,6 +208,7 @@ class MultiHorizonPredictor:
         data_timestamp: datetime | None = None,
         adv: float = float("inf"),
         planned_dollars: float = 0.0,
+        exclude_families: set | None = None,
     ) -> AllPredictions:
         """
         Generate predictions for all horizons.
@@ -219,6 +220,8 @@ class MultiHorizonPredictor:
             data_timestamp: Data timestamp for freshness
             adv: Average daily volume
             planned_dollars: Planned trade size
+            exclude_families: Families to skip (e.g., CS ranking families
+                handled by CrossSectionalRankingPredictor)
 
         Returns:
             AllPredictions with all horizons
@@ -229,6 +232,8 @@ class MultiHorizonPredictor:
         # Get available families for this target
         available_families = self.loader.list_available_families(target)
         families_to_use = self.families or available_families
+        if exclude_families:
+            families_to_use = [f for f in families_to_use if f not in exclude_families]
 
         all_preds = AllPredictions(
             symbol=symbol,
