@@ -8,6 +8,9 @@ All notable changes to FoxML Core will be documented in this file.
 
 Four rounds of systematic audits and fixes across the Rust TUI and Python IPC bridge, addressing 47 issues total.
 
+#### Added
+- **Polygon.io data download script** - `bin/download_polygon_data.py` downloads historical 5-minute OHLCV bars into FoxML-compatible parquet format with pagination, RTH filtering, rate limiting, and custom symbol lists
+
 #### Fixed
 - **Fake command palette commands** - 5 commands (`trading.pause`, `trading.resume`, `training.stop`, `config.edit`, `nav.models`) now call real logic instead of showing fake success notifications
 - **Position table highlight when scrolled** - Selection tracking now uses scroll offset so the correct row is highlighted
