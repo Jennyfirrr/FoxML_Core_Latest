@@ -1075,9 +1075,11 @@ def prepare_training_data_raw_sequence(
     # Apply max_cs_samples if specified
     if max_cs_samples is not None and len(X) > max_cs_samples:
         logger.info(f"Downsampling sequences from {len(X)} to {max_cs_samples}")
-        # Deterministic downsampling
-        np.random.seed(42)
-        sample_idx = np.random.choice(len(X), max_cs_samples, replace=False)
+        # Deterministic downsampling using stable seed
+        from TRAINING.common.determinism import stable_seed_from
+        ds_seed = stable_seed_from([target, "raw_ohlcv_downsample", str(len(X))])
+        rng = np.random.RandomState(ds_seed)
+        sample_idx = rng.choice(len(X), max_cs_samples, replace=False)
         sample_idx = np.sort(sample_idx)  # Keep temporal order
         X = X[sample_idx]
         y = y[sample_idx]

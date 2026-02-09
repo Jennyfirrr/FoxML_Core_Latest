@@ -213,10 +213,10 @@ os.environ.setdefault("PYTHONHASHSEED", "42")
 os.environ.setdefault("TF_DETERMINISTIC_OPS", "1")
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
-# Set random seeds
-np.random.seed(42)
+# NOTE: Do NOT set np.random.seed() or random.seed() at module level.
+# The determinism framework (repro_bootstrap) handles seeding.
+# Module-level seeds would overwrite the framework's controlled seeding on every import.
 import random
-random.seed(42)
 
 # Suppress warnings
 warnings.filterwarnings("ignore", message=r"Protobuf gencode version .* is exactly one major version older")

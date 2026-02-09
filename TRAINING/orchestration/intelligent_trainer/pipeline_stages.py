@@ -311,7 +311,8 @@ class PipelineStageMixin:
                     self.target_ranking_cache = self.cache_dir / "target_rankings.json"
                     self.feature_selection_cache = self.cache_dir / "feature_selections"
 
-                    bin_name = self._get_sample_size_bin(self._n_effective)
+                    bin_info = self._get_sample_size_bin(self._n_effective)
+                    bin_name = bin_info["bin_name"]
                     logger.info(f"Organized run by sample size bin (N={self._n_effective}, bin={bin_name}): {self.output_dir}")
                     return
                 except Exception as move_error:
