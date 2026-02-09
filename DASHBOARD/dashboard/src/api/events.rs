@@ -88,7 +88,9 @@ impl TradingEvent {
     pub fn display_timestamp(&self) -> String {
         if self.timestamp.len() >= 19 {
             // ISO format: 2025-01-21T10:30:00...
-            self.timestamp[11..19].to_string()
+            self.timestamp.get(11..19)
+                .unwrap_or(&self.timestamp)
+                .to_string()
         } else {
             self.timestamp.clone()
         }

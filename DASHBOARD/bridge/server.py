@@ -37,6 +37,8 @@ uvicorn_access_logger.setLevel(logging.WARNING)
 uvicorn_logger = logging.getLogger("uvicorn")
 uvicorn_logger.setLevel(logging.WARNING)
 
+logger = logging.getLogger(__name__)
+
 # Try to import observability (may not be available if trading engine not running)
 try:
     from LIVE_TRADING.observability import events, metrics
@@ -60,18 +62,16 @@ except ImportError:
     ALPACA_AVAILABLE = False
     logger.warning("Alpaca stream module not available")
 
-logger = logging.getLogger(__name__)
-
 # App will be created with lifespan context manager
 
 # WebSocket connections
 active_connections: List[WebSocket] = []
 
 # Event queue for WebSocket streaming (internal events)
-event_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue()
+event_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue(maxsize=1000)
 
 # Alpaca event queue (separate for Alpaca-specific events)
-alpaca_event_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue()
+alpaca_event_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue(maxsize=1000)
 
 # Control state file path
 CONTROL_STATE_FILE = Path(os.getenv("FOXML_STATE_DIR", "state")) / "control_state.json"
@@ -125,14 +125,14 @@ def _read_control_state() -> Dict[str, Any]:
 
 
 def _write_control_state(state: Dict[str, Any]) -> None:
-    """Write control state to file."""
+    """Write control state to file (atomic write with temp+rename)."""
     try:
-        # Ensure directory exists
         CONTROL_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        
-        state["last_updated"] = datetime.now().isoformat()
-        with open(CONTROL_STATE_FILE, "w") as f:
-            json.dump(state, f, indent=2)
+        state["last_updated"] = datetime.now(timezone.utc).isoformat()
+        tmp = CONTROL_STATE_FILE.with_suffix(".tmp")
+        with open(tmp, "w") as f:
+            json.dump(state, f, indent=2, sort_keys=True)
+        tmp.rename(CONTROL_STATE_FILE)
     except Exception as e:
         logger.error(f"Error writing control state: {e}")
         raise
@@ -207,10 +207,11 @@ async def websocket_events(websocket: WebSocket):
                 await websocket.send_json(event)
             except asyncio.TimeoutError:
                 # Send ping to keep connection alive
-                await websocket.send_json({"type": "ping", "timestamp": "..."})
+                await websocket.send_json({"type": "ping", "timestamp": datetime.now(timezone.utc).isoformat()})
                 
     except WebSocketDisconnect:
-        active_connections.remove(websocket)
+        if websocket in active_connections:
+            active_connections.remove(websocket)
         logger.info(f"WebSocket client disconnected. Total connections: {len(active_connections)}")
     except Exception as e:
         logger.error(f"WebSocket error: {e}")
@@ -833,7 +834,8 @@ async def websocket_alpaca(websocket: WebSocket):
                 await websocket.send_json({"type": "ping", "source": "alpaca"})
 
     except WebSocketDisconnect:
-        active_connections.remove(websocket)
+        if websocket in active_connections:
+            active_connections.remove(websocket)
         logger.info(f"Alpaca WebSocket client disconnected. Total connections: {len(active_connections)}")
     except Exception as e:
         logger.error(f"Alpaca WebSocket error: {e}")
@@ -854,12 +856,7 @@ def on_training_event(event: Dict[str, Any]) -> None:
     try:
         training_event_queue.put_nowait(event)
     except asyncio.QueueFull:
-        # Drop oldest event and add new one
-        try:
-            training_event_queue.get_nowait()
-            training_event_queue.put_nowait(event)
-        except Exception:
-            pass
+        logger.debug("Training event queue full, dropping event")
 
 
 @app.websocket("/ws/training")

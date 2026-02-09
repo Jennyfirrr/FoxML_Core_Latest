@@ -265,7 +265,7 @@ impl NotificationManager {
             }
 
             let notification_area = Rect {
-                x: area.x + area.width - notification_width - 2,
+                x: area.x.saturating_add(area.width.saturating_sub(notification_width + 2)),
                 y: area.y + y_offset,
                 width: notification_width,
                 height: notification_height,

@@ -129,14 +129,27 @@
       "Bash(git -C ~ status)",
       "Bash(cargo doc:*)",
       "Bash(conda run:*)",
-      "Bash(cargo check:*)"
+      "Bash(cargo check:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(ssh-add:*)",
+      "Bash(ssh:*)",
+      "Bash(rsync:*)",
+      "Bash(git init:*)",
+      "Bash(do if [ -e \"/home/jennifer/FoxML/public/$dir\" ])",
+      "Bash(then echo \"LEAKED: $dir\")",
+      "Bash(else echo \"OK: $dir not present\")",
+      "Bash(git -C /home/jennifer/FoxML/private branch:*)",
+      "Bash(pip3 install:*)",
+      "Bash(conda info:*)",
+      "Bash(/opt/anaconda/bin/python -m pytest:*)",
+      "Bash(/opt/anaconda/bin/python:*)"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "foxml-config",
     "foxml-sst",
     "foxml-artifact",
     "foxml-live-dev"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

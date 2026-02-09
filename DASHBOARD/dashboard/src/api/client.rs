@@ -26,7 +26,7 @@ impl DashboardClient {
             client: Client::builder()
                 .timeout(Duration::from_secs(5))
                 .build()
-                .unwrap(),
+                .expect("Failed to build HTTP client (TLS backend unavailable?)"),
         }
     }
 
@@ -56,7 +56,11 @@ impl DashboardClient {
             .as_array()
             .map(|arr| {
                 arr.iter()
-                    .filter_map(|p| serde_json::from_value(p.clone()).ok())
+                    .filter_map(|p| {
+                        serde_json::from_value(p.clone())
+                            .map_err(|e| tracing::warn!("Failed to parse position: {}", e))
+                            .ok()
+                    })
                     .collect()
             })
             .unwrap_or_default();

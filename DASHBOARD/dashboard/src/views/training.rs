@@ -688,9 +688,11 @@ impl TrainingView {
                     _ => self.theme.text_muted,
                 };
 
-                let progress_bar_width = 15;
-                let filled = (run.progress * progress_bar_width as f64) as usize;
-                let bar = format!("{}{}", "█".repeat(filled), "░".repeat(progress_bar_width - filled));
+                let progress_bar_width = 15usize;
+                let clamped = run.progress.clamp(0.0, 1.0);
+                let filled = (clamped * progress_bar_width as f64) as usize;
+                let empty = progress_bar_width.saturating_sub(filled);
+                let bar = format!("{}{}", "█".repeat(filled), "░".repeat(empty));
 
                 let line = Line::from(vec![
                     Span::styled(indicator, Style::default().fg(if is_selected { self.theme.accent } else { self.theme.text_muted })),

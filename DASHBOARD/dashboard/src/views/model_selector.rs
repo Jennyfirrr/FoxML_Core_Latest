@@ -278,6 +278,9 @@ impl ModelSelectorView {
             return Ok("No runs available".to_string());
         }
 
+        if self.selected >= self.runs.len() {
+            self.selected = self.runs.len().saturating_sub(1);
+        }
         let run = &self.runs[self.selected];
 
         // Create LIVE_TRADING/models directory if needed
@@ -392,7 +395,8 @@ impl ModelSelectorView {
             return;
         }
 
-        let run = &self.runs[self.selected];
+        let selected = self.selected.min(self.runs.len().saturating_sub(1));
+        let run = &self.runs[selected];
         let title = format!("Run Details: {}", run.run_id);
         let block = Panel::new(&self.theme).title(&title).block();
         let inner = block.inner(area);
@@ -610,7 +614,8 @@ impl super::ViewTrait for ModelSelectorView {
             KeyCode::Down | KeyCode::Char('j') => {
                 if self.show_detail {
                     if !self.runs.is_empty() {
-                        let max_scroll = self.runs[self.selected].targets.len().saturating_sub(5);
+                        let idx = self.selected.min(self.runs.len().saturating_sub(1));
+                        let max_scroll = self.runs[idx].targets.len().saturating_sub(5);
                         if self.detail_scroll < max_scroll {
                             self.detail_scroll += 1;
                         }
