@@ -175,12 +175,27 @@ class InferenceEngine:
     ) -> None:
         """Initialize sequential buffer for a model."""
         seq_length = metadata.get("sequence_length", 20)
-        # CONTRACT: feature_list is canonical; fallback to legacy fields for old models
-        feature_list = metadata.get("feature_list") or metadata.get("features") or metadata.get("feature_names") or []
-        n_features = len(feature_list)
+        input_mode = metadata.get("input_mode", "features")
+
+        if input_mode == "raw_sequence":
+            # Raw OHLCV: F = number of channels (typically 5)
+            channels = metadata.get(
+                "sequence_channels",
+                ["open", "high", "low", "close", "volume"],
+            )
+            n_features = len(channels)
+        else:
+            # Feature-based: F = number of features
+            feature_list = (
+                metadata.get("feature_list")
+                or metadata.get("features")
+                or metadata.get("feature_names")
+                or []
+            )
+            n_features = len(feature_list)
 
         if n_features == 0:
-            logger.warning(f"No features defined for {target}:{family}, skipping buffer init")
+            logger.warning(f"No features/channels for {target}:{family}, skipping buffer init")
             return
 
         buffer_key = f"{target}:{family}"
@@ -192,7 +207,10 @@ class InferenceEngine:
             F=n_features,
             ttl_seconds=ttl_seconds,
         )
-        logger.debug(f"Initialized buffer for {buffer_key}: T={seq_length}, F={n_features}, ttl={ttl_seconds}s")
+        logger.debug(
+            f"Initialized buffer for {buffer_key}: T={seq_length}, F={n_features}, "
+            f"mode={input_mode}, ttl={ttl_seconds}s"
+        )
 
     def predict(
         self,
@@ -241,7 +259,22 @@ class InferenceEngine:
         model = self._models[cache_key]
         metadata = self._metadata[cache_key]
 
+        input_mode = metadata.get("input_mode", "features")
+
         try:
+            # Raw OHLCV sequence path
+            if input_mode == "raw_sequence":
+                if family in SEQUENTIAL_FAMILIES:
+                    return self._predict_raw_sequential(
+                        model, features, target, family, symbol, metadata
+                    )
+                else:
+                    raise InferenceError(
+                        family, symbol,
+                        f"raw_sequence mode only supported for sequential families, got {family}",
+                    )
+
+            # Existing feature-based paths
             if family in TREE_FAMILIES:
                 return self._predict_tree(model, features, family)
             elif family in SEQUENTIAL_FAMILIES:
@@ -303,6 +336,64 @@ class InferenceEngine:
             return float("nan")
 
         # Get sequence and predict
+        sequence = buffer_manager.get_sequence(symbol)
+        if sequence is None:
+            return float("nan")
+
+        # Check if model is PyTorch or Keras
+        if hasattr(model, "forward"):
+            # PyTorch model
+            import torch
+            with torch.no_grad():
+                seq_tensor = sequence.to(self.device)
+                pred = model(seq_tensor)
+                return float(pred.cpu().numpy().squeeze())
+        else:
+            # Keras model
+            pred = model.predict(sequence.numpy(), verbose=0)
+            return float(pred.squeeze())
+
+    def _predict_raw_sequential(
+        self,
+        model: Any,
+        ohlcv_row: np.ndarray,
+        target: str,
+        family: str,
+        symbol: str,
+        metadata: Dict[str, Any],
+    ) -> float:
+        """
+        Predict with raw OHLCV sequential model.
+
+        Pushes normalized OHLCV bar into ring buffer, predicts when buffer full.
+        Same pattern as _predict_sequential() but with raw OHLCV data.
+
+        Args:
+            model: Loaded model
+            ohlcv_row: Normalized OHLCV bar (5,) from predictor._prepare_raw_sequence()
+            target: Target name
+            family: Model family
+            symbol: Symbol for buffer tracking
+            metadata: Model metadata
+
+        Returns:
+            Prediction value (NaN during warmup)
+        """
+        buffer_key = f"{target}:{family}"
+        buffer_manager = self._seq_buffers.get(buffer_key)
+
+        if buffer_manager is None:
+            raise InferenceError(family, symbol, "Buffer not initialized for raw sequence model")
+
+        # Push normalized OHLCV bar to buffer
+        ohlcv_1d = np.atleast_1d(ohlcv_row).astype(np.float32)
+        buffer_manager.push_features(symbol, ohlcv_1d)
+
+        # Check if buffer has enough bars
+        if not buffer_manager.is_ready(symbol):
+            return float("nan")  # Still warming up
+
+        # Get full sequence and predict
         sequence = buffer_manager.get_sequence(symbol)
         if sequence is None:
             return float("nan")

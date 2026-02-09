@@ -337,6 +337,67 @@ class ModelLoader:
         with open(model_path, "rb") as f:
             return pickle.load(f)
 
+    def get_input_mode(
+        self,
+        target: str,
+        family: str,
+        view: str = "CROSS_SECTIONAL",
+    ) -> str:
+        """
+        Get the input mode for a model.
+
+        CONTRACT: INTEGRATION_CONTRACTS.md v1.3
+        - "features" (default): Traditional feature-based input
+        - "raw_sequence": Raw OHLCV bar sequences
+
+        Returns "features" for models without input_mode field (backward compat).
+
+        Args:
+            target: Target name
+            family: Model family name
+            view: View type
+
+        Returns:
+            Input mode string
+        """
+        _, metadata = self.load_model(target, family, view)
+        return metadata.get("input_mode", "features")
+
+    def get_sequence_config(
+        self,
+        target: str,
+        family: str,
+        view: str = "CROSS_SECTIONAL",
+    ) -> Dict[str, Any]:
+        """
+        Get sequence configuration for raw_sequence models.
+
+        CONTRACT: INTEGRATION_CONTRACTS.md v1.3
+        - sequence_length: bars in sequence
+        - sequence_channels: OHLCV channel names
+        - sequence_normalization: normalization method
+
+        Args:
+            target: Target name
+            family: Model family name
+            view: View type
+
+        Returns:
+            Dict with sequence config, or empty dict for feature-based models.
+        """
+        _, metadata = self.load_model(target, family, view)
+        if metadata.get("input_mode", "features") != "raw_sequence":
+            return {}
+
+        return {
+            "sequence_length": metadata.get("sequence_length", 64),
+            "sequence_channels": metadata.get(
+                "sequence_channels",
+                ["open", "high", "low", "close", "volume"],
+            ),
+            "sequence_normalization": metadata.get("sequence_normalization", "returns"),
+        }
+
     def get_feature_list(
         self,
         target: str,
@@ -349,6 +410,7 @@ class ModelLoader:
         CONTRACT: See INTEGRATION_CONTRACTS.md for schema
         - New models: feature_list field (sorted)
         - Legacy models: fallback to features or feature_names
+        - raw_sequence models: empty list (no computed features)
 
         Args:
             target: Target name
@@ -359,6 +421,10 @@ class ModelLoader:
             List of feature names in order
         """
         _, metadata = self.load_model(target, family, view)
+
+        # Raw sequence models have empty feature_list by contract
+        if metadata.get("input_mode", "features") == "raw_sequence":
+            return []
 
         # CONTRACT: feature_list is canonical; fallback to legacy fields for old models
         feature_list = metadata.get("feature_list")

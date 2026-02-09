@@ -331,6 +331,28 @@ class MultiHorizonPredictor:
 
         return horizon_preds
 
+    def _prepare_raw_sequence(
+        self,
+        prices: pd.DataFrame,
+        target: str,
+        family: str,
+    ) -> Optional[np.ndarray]:
+        """
+        Prepare raw OHLCV sequence for inference. Implemented in Phase 2.
+
+        Args:
+            prices: OHLCV DataFrame
+            target: Target name
+            family: Model family
+
+        Returns:
+            Normalized OHLCV bar (5,) or None
+        """
+        raise NotImplementedError(
+            f"Raw OHLCV preparation not yet implemented for {family}/{target}. "
+            f"See .claude/plans/live-phase2-raw-ohlcv-inference.md"
+        )
+
     def _predict_single(
         self,
         target: str,
@@ -344,12 +366,19 @@ class MultiHorizonPredictor:
     ) -> Optional[ModelPrediction]:
         """Generate single model prediction."""
 
-        # Build features
-        builder = self._get_feature_builder(target, family)
-        features = builder.build_features(prices, symbol)
+        # Check input mode
+        input_mode = self.loader.get_input_mode(target, family)
 
-        if np.any(np.isnan(features)):
-            logger.warning(f"NaN in features for {family}/{symbol}")
+        if input_mode == "raw_sequence":
+            # Raw OHLCV path: prepare normalized bar instead of building features
+            features = self._prepare_raw_sequence(prices, target, family)
+        else:
+            # Existing: build computed features
+            builder = self._get_feature_builder(target, family)
+            features = builder.build_features(prices, symbol)
+
+        if features is None or np.any(np.isnan(features)):
+            logger.warning(f"Invalid features for {family}/{symbol}")
             return None
 
         # Run inference
