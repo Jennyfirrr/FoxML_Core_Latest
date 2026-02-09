@@ -51,6 +51,10 @@ class VolatilityScaler:
             "live_trading.sizing.max_weight",
             default=DEFAULT_CONFIG["max_weight"],
         )
+        # Guard against z_max=0 which would cause ZeroDivisionError in scale()
+        if self.z_max <= 0:
+            logger.warning(f"z_max={self.z_max} is invalid, using default 3.0")
+            self.z_max = 3.0
         logger.info(f"VolatilityScaler: z_max={self.z_max}, max_weight={self.max_weight}")
 
     def scale(self, alpha: float, volatility: float) -> float:

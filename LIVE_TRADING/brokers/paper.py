@@ -191,14 +191,18 @@ class PaperBroker:
                     f"have ${self._cash:,.2f}"
                 )
 
-        # Check position for sell orders
+        # Check cash for sell short orders (margin requirement)
         if side == SIDE_SELL:
             current_pos = self._positions.get(symbol, 0.0)
             if qty > current_pos:
-                raise OrderRejectedError(
-                    symbol,
-                    f"Insufficient shares: need {qty}, have {current_pos}",
-                )
+                # Short selling: need cash to cover the margin
+                short_qty = qty - current_pos
+                margin_required = short_qty * fill_price + fee
+                if margin_required > self._cash:
+                    raise InsufficientFundsError(
+                        f"Insufficient margin for short: need ${margin_required:,.2f}, "
+                        f"have ${self._cash:,.2f}"
+                    )
 
         # Execute the order
         order_id = str(uuid.uuid4())[:8]
@@ -242,6 +246,7 @@ class PaperBroker:
             "order_id": order_id,
             "status": "filled",
             "fill_price": fill_price,
+            "filled_qty": qty,
             "qty": qty,
             "timestamp": timestamp,
         }

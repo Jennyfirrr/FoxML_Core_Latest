@@ -1091,7 +1091,15 @@ class TradingEngine:
         if last_trade is None:
             return True
 
-        elapsed = (current_time - last_trade).total_seconds()
+        try:
+            elapsed = (current_time - last_trade).total_seconds()
+        except TypeError:
+            # Naive vs aware datetime mismatch — treat as eligible
+            logger.warning(
+                f"Timezone mismatch in cooldown check for {symbol}: "
+                f"current_time={current_time!r}, last_trade={last_trade!r}"
+            )
+            return True
         return elapsed >= self.config.trade_cooldown_seconds
 
     def _execute_trade(
@@ -1151,6 +1159,16 @@ class TradingEngine:
 
             # Update state with verified fill
             fill_price = result.get("fill_price", 0.0)
+            if fill_price <= 0:
+                logger.error(
+                    f"Invalid fill_price={fill_price} for {decision.symbol}, "
+                    f"order_id={result.get('order_id')} — skipping state update"
+                )
+                emit_error(
+                    "invalid_fill_price",
+                    f"Fill price {fill_price} for {decision.symbol} would corrupt position"
+                )
+                return False
             filled_qty = result.get("filled_qty", qty)  # Use actual filled quantity
 
             # Get current position shares
@@ -1303,6 +1321,8 @@ class TradingEngine:
                     logger.warning(msg)
 
         # Check for internal positions not in broker
+        # Collect removals to avoid mutating dict during iteration
+        orphaned_to_remove = []
         for symbol, internal_pos in sorted_items(self.state.positions):
             if symbol not in broker_positions:
                 msg = f"Orphaned internal position: {symbol} qty={internal_pos.shares:.4f}"
@@ -1313,9 +1333,12 @@ class TradingEngine:
                     raise RuntimeError(msg)
                 elif self.config.reconciliation_mode == "auto_sync":
                     logger.warning(f"{msg} - removing from internal state")
-                    self.state.remove_position(symbol)
+                    orphaned_to_remove.append(symbol)
                 else:  # "warn"
                     logger.warning(msg)
+
+        for symbol in orphaned_to_remove:
+            self.state.remove_position(symbol)
 
         logger.debug("Position reconciliation completed")
 
@@ -1512,10 +1535,13 @@ class TradingEngine:
                 "pending_count": self._cils_reward_tracker.pending_count,
                 "completed_count": self._cils_reward_tracker.completed_count,
             }
-            # Add per-arm stats
+            # Add per-arm stats (defensive: bandit_stats/arm_stats may not exist)
+            bandit_stats = stats.get("bandit_stats", {})
+            arm_stats_list = bandit_stats.get("arm_stats", [])
             for i, arm_name in enumerate(self._cils_optimizer.arm_names):
                 arm_stats = self._cils_reward_tracker.get_arm_stats(i)
-                stats["bandit_stats"]["arm_stats"][i]["reward_stats"] = arm_stats
+                if i < len(arm_stats_list) and isinstance(arm_stats_list[i], dict):
+                    arm_stats_list[i]["reward_stats"] = arm_stats
 
         return stats
 
