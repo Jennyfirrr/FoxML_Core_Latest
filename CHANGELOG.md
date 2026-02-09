@@ -2,6 +2,112 @@
 
 All notable changes to FoxML Core will be documented in this file.
 
+## 2026-02-09
+
+### Dashboard Hardening & Bug Fixes (Rounds 1-3)
+
+Three rounds of systematic audits and fixes across the Rust TUI and Python IPC bridge, addressing 45 issues total.
+
+#### Fixed
+- **Fake command palette commands** - 5 commands (`trading.pause`, `trading.resume`, `training.stop`, `config.edit`, `nav.models`) now call real logic instead of showing fake success notifications
+- **Position table highlight when scrolled** - Selection tracking now uses scroll offset so the correct row is highlighted
+- **WebSocket connection hang** - Added 5-second timeout so the connect button recovers if bridge is unreachable
+- **View render errors silenced** - All `let _ =` on render/update calls replaced with `tracing::warn!` logging
+- **Bridge timezone inconsistency** - 3 control endpoints (`pause`, `resume`, `kill_switch`) now use `datetime.now(timezone.utc)` matching all other endpoints
+- **`get_metrics()` error schema incomplete** - Error fallback now returns all expected fields plus `"error"` field
+- **Overview health indicator overflow** - Early return when `x >= area.right()` prevents wasted rendering cycles
+- **Training event queue log level** - Changed from `debug` to `warning` to match trading/alpaca queue levels
+- **Decision statistics mismatch** - `trade_count`/`hold_count`/`blocked_count` now computed before pagination limit, matching `total_decisions`
+- **Type coercion crash in decision explanation** - Numeric format strings wrapped with `float()` coercion and try/except for corrupted trace data
+- **`get_recent_events(count=0)` returns all events** - Added guard: `if count <= 0: return []`
+- **Timestamp sorting with empty string default** - Changed default from `""` to `"0"` so missing timestamps sort last
+- **Silent date parse error** - Invalid `since` parameter now logs a warning instead of bare `pass`
+
+#### Added
+- **Bearer token auth on control endpoints** - Bridge generates random token on startup, writes to `/tmp/foxml_bridge_token`; Rust client reads and sends `Authorization: Bearer <token>` on POST requests
+- **Sharpe ratio calculation** - Rolling P&L history with annualized Sharpe (`mean/std * sqrt(252)`) replaces the `None` stub
+- **`src/config.rs` module** - Environment variable configuration for bridge URL, tmp paths, and project root:
+  - `FOXML_BRIDGE_URL` (default: `127.0.0.1:8765`)
+  - `FOXML_TMP_DIR` (default: `/tmp`)
+  - `FOXML_ROOT` (default: `.`)
+- **Desktop notification failure logging** - Failed `notify-send` calls now logged at `debug` level
+
+#### Changed
+- 15+ Rust files updated to use `crate::config::*` helpers instead of hardcoded strings
+- Model selector paths now use `config::project_root()` instead of relative `PathBuf::from()`
+- `DASHBOARD/dashboard/src/api/client.rs` - Added `auth_token` field and `authenticated_post()` helper
+
+#### Files Created
+- `DASHBOARD/dashboard/src/config.rs` - Centralized environment variable configuration
+
+#### Files Modified
+- `DASHBOARD/dashboard/src/app.rs` - Command palette wiring, render error logging
+- `DASHBOARD/dashboard/src/views/trading.rs` - WS timeout, config bridge URL
+- `DASHBOARD/dashboard/src/views/overview.rs` - Overflow guard, config paths
+- `DASHBOARD/dashboard/src/views/model_selector.rs` - Config project root paths
+- `DASHBOARD/dashboard/src/views/training.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/log_viewer.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/config_editor.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/file_browser.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/training_launcher.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/service_manager.rs` - Config paths
+- `DASHBOARD/dashboard/src/views/settings.rs` - Config paths
+- `DASHBOARD/dashboard/src/widgets/position_table.rs` - Scroll offset fix
+- `DASHBOARD/dashboard/src/api/client.rs` - Auth token, authenticated POST
+- `DASHBOARD/dashboard/src/ui/notification.rs` - Failure logging
+- `DASHBOARD/dashboard/src/launcher/*.rs` - Config paths (6 files)
+- `DASHBOARD/bridge/server.py` - Timezone, Sharpe, auth, error schema, decision stats, type safety
+- `DASHBOARD/bridge/alpaca_stream.py` - Event count guard
+
+---
+
+## 2026-02-08
+
+### Codebase Bug Fix Campaign
+
+Systematic code review and fix of 36 bugs across all components, with 17 false positives identified and documented.
+
+#### Fixed
+- **Dashboard (16 bugs)** - Python bridge async I/O, CORS headers, systemd detection, timestamp handling, and Rust TUI rendering issues
+- **CRITICAL (7 bugs)** - Cross-component issues including data corruption, race conditions, and import errors
+- **LIVE_TRADING (7 bugs)** - Inference pipeline crashes, position corruption, short selling logic errors
+- **TRAINING (6 bugs)** - Determinism violations, import errors, and code quality issues
+
+#### Files Modified
+- See commit messages `df3a1d7` through `a190726` for full file lists
+
+---
+
+### LIVE_TRADING Inference Pipeline
+
+Wired raw OHLCV and cross-sectional ranking model support into the live inference pipeline.
+
+#### Added
+- **Input mode awareness** - `loader.py`, `inference.py`, `predictor.py` now check `input_mode` field from model metadata
+- **Raw OHLCV inference path** - `_prepare_raw_sequence()` with case-insensitive OHLCV column matching and SST normalization
+- **Cross-sectional ranking inference** - `predict_cross_section()` method for batch ranking across symbols
+- **Sequential buffer manager** - `SeqBufferManager(T=seq_len, F=n_features)` for streaming sequence construction
+- **Barrier gate fix** - Added `predict_single_target()` to `MultiHorizonPredictor` fixing broken barrier gate
+
+#### Changed
+- `LIVE_TRADING/models/loader.py` - Returns `input_mode` in metadata tuple
+- `LIVE_TRADING/models/inference.py` - Routes to raw OHLCV or feature-based prediction based on input mode
+- `LIVE_TRADING/prediction/predictor.py` - Cross-sectional ranking support
+
+---
+
+### Determinism & Thread Safety Fixes
+
+#### Fixed
+- Thread safety violations in shared state
+- Non-deterministic dict iteration in artifact code paths
+- Data corruption bugs in concurrent access patterns
+
+#### Files Modified
+- See commit `9e06343` for full details
+
+---
+
 ## 2026-01-21
 
 ### Rust TUI Dashboard

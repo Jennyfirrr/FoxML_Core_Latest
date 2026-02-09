@@ -174,6 +174,8 @@ class AlpacaStreamClient:
 
     def get_recent_events(self, count: int = 50) -> List[AlpacaEvent]:
         """Get recent events (for polling fallback)."""
+        if count <= 0:
+            return []
         return self._recent_events[-count:]
 
     async def connect(self) -> None:
