@@ -239,8 +239,7 @@ async def lifespan(app: FastAPI):
             logger.error(f"Error stopping Alpaca stream: {e}")
 
     if OBSERVABILITY_AVAILABLE:
-        # Unsubscribe (if needed)
-        pass
+        logger.info("EventBus shutdown — callback will be garbage-collected with process")
 
 app = FastAPI(title="FoxML Dashboard IPC Bridge", lifespan=lifespan)
 
@@ -511,10 +510,10 @@ async def get_trade_history(
                 since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
                 trades = [t for t in trades if datetime.fromisoformat(t.get("timestamp", "1970-01-01")) >= since_dt]
             except ValueError:
-                pass  # Invalid date format, skip filter
+                logger.warning("Invalid 'since' date format: %s — ignoring filter", since)
 
         # Sort by timestamp descending
-        trades.sort(key=lambda t: t.get("timestamp", ""), reverse=True)
+        trades.sort(key=lambda t: t.get("timestamp", "0"), reverse=True)
 
         # Paginate
         total = len(trades)
@@ -624,10 +623,15 @@ async def get_recent_decisions(
             decisions = [d for d in decisions if d.get("decision") == decision_type.upper()]
 
         # Sort by timestamp descending (most recent first)
-        decisions.sort(key=lambda d: d.get("timestamp", ""), reverse=True)
+        decisions.sort(key=lambda d: d.get("timestamp", "0"), reverse=True)
+
+        # Compute summary statistics BEFORE limiting (so counts match total)
+        total = len(decisions)
+        trade_count = sum(1 for d in decisions if d.get("decision") == "TRADE")
+        hold_count = sum(1 for d in decisions if d.get("decision") == "HOLD")
+        blocked_count = sum(1 for d in decisions if d.get("decision") == "BLOCKED")
 
         # Limit
-        total = len(decisions)
         decisions = decisions[:limit]
 
         # Optionally strip traces to reduce payload size
@@ -636,11 +640,6 @@ async def get_recent_decisions(
                 {k: v for k, v in d.items() if k != "trace"}
                 for d in decisions
             ]
-
-        # Add summary statistics
-        trade_count = sum(1 for d in decisions if d.get("decision") == "TRADE")
-        hold_count = sum(1 for d in decisions if d.get("decision") == "HOLD")
-        blocked_count = sum(1 for d in decisions if d.get("decision") == "BLOCKED")
 
         return {
             "decisions": decisions,
@@ -684,7 +683,7 @@ async def get_latest_decision(symbol: str) -> Dict[str, Any]:
             return {"decision": None, "message": f"No decisions found for {symbol}"}
 
         # Sort by timestamp and get most recent
-        decisions.sort(key=lambda d: d.get("timestamp", ""), reverse=True)
+        decisions.sort(key=lambda d: d.get("timestamp", "0"), reverse=True)
         latest = decisions[0]
 
         # Generate human-readable explanation if trace exists
@@ -715,13 +714,16 @@ def _generate_decision_explanation(decision: Dict[str, Any], trace: Dict[str, An
     # Market context
     snapshot = trace.get("market_snapshot", {})
     if snapshot:
-        lines.extend([
-            "Market Context:",
-            f"  Price: {snapshot.get('close', 0):.2f}",
-            f"  Spread: {snapshot.get('spread_bps', 0):.1f} bps",
-            f"  Volatility: {snapshot.get('volatility', 0):.2%}",
-            "",
-        ])
+        try:
+            lines.extend([
+                "Market Context:",
+                f"  Price: {float(snapshot.get('close', 0)):.2f}",
+                f"  Spread: {float(snapshot.get('spread_bps', 0)):.1f} bps",
+                f"  Volatility: {float(snapshot.get('volatility', 0)):.2%}",
+                "",
+            ])
+        except (TypeError, ValueError):
+            lines.extend(["Market Context:", "  (data unavailable)", ""])
 
     # Horizon analysis
     horizon_scores = trace.get("horizon_scores", {})
@@ -730,10 +732,13 @@ def _generate_decision_explanation(decision: Dict[str, Any], trace: Dict[str, An
     if horizon_scores:
         lines.append("Horizon Analysis:")
         for h in sorted(horizon_scores.keys()):
-            alpha_bps = blended_alphas.get(h, 0) * 10000
-            score = horizon_scores.get(h, 0)
-            marker = " <-- SELECTED" if h == selected else ""
-            lines.append(f"  {h}: alpha={alpha_bps:.1f}bps, score={score:.2f}{marker}")
+            try:
+                alpha_bps = float(blended_alphas.get(h, 0)) * 10000
+                score = float(horizon_scores.get(h, 0))
+                marker = " <-- SELECTED" if h == selected else ""
+                lines.append(f"  {h}: alpha={alpha_bps:.1f}bps, score={score:.2f}{marker}")
+            except (TypeError, ValueError):
+                lines.append(f"  {h}: (data unavailable)")
         lines.append("")
 
     # Gate results
@@ -741,26 +746,35 @@ def _generate_decision_explanation(decision: Dict[str, Any], trace: Dict[str, An
     barrier_gate = trace.get("barrier_gate_result", {})
     if spread_gate or barrier_gate:
         lines.append("Gate Evaluations:")
-        if spread_gate:
-            lines.append(f"  Spread Gate: allowed={spread_gate.get('allowed', True)}, "
-                        f"spread={spread_gate.get('spread_bps', 0):.1f}bps")
-        if barrier_gate:
-            lines.append(f"  Barrier Gate: allowed={barrier_gate.get('allowed', True)}, "
-                        f"p_peak={barrier_gate.get('p_peak', 0):.2f}, "
-                        f"p_valley={barrier_gate.get('p_valley', 0):.2f}")
+        if spread_gate and isinstance(spread_gate, dict):
+            try:
+                lines.append(f"  Spread Gate: allowed={spread_gate.get('allowed', True)}, "
+                            f"spread={float(spread_gate.get('spread_bps', 0)):.1f}bps")
+            except (TypeError, ValueError):
+                lines.append(f"  Spread Gate: allowed={spread_gate.get('allowed', True)}")
+        if barrier_gate and isinstance(barrier_gate, dict):
+            try:
+                lines.append(f"  Barrier Gate: allowed={barrier_gate.get('allowed', True)}, "
+                            f"p_peak={float(barrier_gate.get('p_peak', 0)):.2f}, "
+                            f"p_valley={float(barrier_gate.get('p_valley', 0)):.2f}")
+            except (TypeError, ValueError):
+                lines.append(f"  Barrier Gate: allowed={barrier_gate.get('allowed', True)}")
         lines.append("")
 
     # Sizing
     raw_weight = trace.get("raw_weight", 0)
     final_weight = trace.get("final_weight", 0)
     if raw_weight or final_weight:
-        lines.extend([
-            "Sizing:",
-            f"  Raw Weight: {raw_weight:.4f}",
-            f"  Final Weight: {final_weight:.4f}",
-            f"  Shares: {decision.get('shares', 0)}",
-            "",
-        ])
+        try:
+            lines.extend([
+                "Sizing:",
+                f"  Raw Weight: {float(raw_weight):.4f}",
+                f"  Final Weight: {float(final_weight):.4f}",
+                f"  Shares: {decision.get('shares', 0)}",
+                "",
+            ])
+        except (TypeError, ValueError):
+            lines.extend(["Sizing:", "  (data unavailable)", ""])
 
     # Risk checks
     risk_checks = trace.get("risk_checks", {})

@@ -247,7 +247,7 @@ impl ModelSelectorView {
     /// Load currently active run from LIVE_TRADING config
     fn load_active_run(&mut self) {
         // Check for active_model symlink or config
-        let active_path = PathBuf::from("LIVE_TRADING/models/active");
+        let active_path = crate::config::project_root().join("LIVE_TRADING/models/active");
         if active_path.exists() {
             if let Ok(target) = fs::read_link(&active_path) {
                 if let Some(name) = target.file_name() {
@@ -257,7 +257,7 @@ impl ModelSelectorView {
         }
 
         // Also check config file
-        let config_path = PathBuf::from("LIVE_TRADING/config/model_config.yaml");
+        let config_path = crate::config::project_root().join("LIVE_TRADING/config/model_config.yaml");
         if config_path.exists() {
             if let Ok(content) = fs::read_to_string(&config_path) {
                 for line in content.lines() {
