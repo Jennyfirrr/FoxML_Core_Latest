@@ -106,15 +106,15 @@ def on_alpaca_event(event: "AlpacaEvent") -> None:
         logger.error(f"Error processing Alpaca event: {e}")
 
 
-def _read_control_state() -> Dict[str, Any]:
-    """Read control state from file."""
+def _read_control_state_sync() -> Dict[str, Any]:
+    """Read control state from file (synchronous — use _read_control_state in async context)."""
     if CONTROL_STATE_FILE.exists():
         try:
             with open(CONTROL_STATE_FILE, "r") as f:
                 return json.load(f)
         except Exception as e:
             logger.error(f"Error reading control state: {e}")
-    
+
     # Default state
     return {
         "paused": False,
@@ -124,8 +124,8 @@ def _read_control_state() -> Dict[str, Any]:
     }
 
 
-def _write_control_state(state: Dict[str, Any]) -> None:
-    """Write control state to file (atomic write with temp+rename)."""
+def _write_control_state_sync(state: Dict[str, Any]) -> None:
+    """Write control state to file (synchronous — use _write_control_state in async context)."""
     try:
         CONTROL_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
         state["last_updated"] = datetime.now(timezone.utc).isoformat()
@@ -136,6 +136,16 @@ def _write_control_state(state: Dict[str, Any]) -> None:
     except Exception as e:
         logger.error(f"Error writing control state: {e}")
         raise
+
+
+async def _read_control_state() -> Dict[str, Any]:
+    """Read control state without blocking the event loop."""
+    return await asyncio.to_thread(_read_control_state_sync)
+
+
+async def _write_control_state(state: Dict[str, Any]) -> None:
+    """Write control state without blocking the event loop."""
+    await asyncio.to_thread(_write_control_state_sync, state)
 
 
 @asynccontextmanager
@@ -179,6 +189,15 @@ async def lifespan(app: FastAPI):
         pass
 
 app = FastAPI(title="FoxML Dashboard IPC Bridge", lifespan=lifespan)
+
+# Add CORS middleware so browser-based tools can reach the bridge
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.websocket("/ws/events")
@@ -960,10 +979,10 @@ async def pause_engine() -> Dict[str, Any]:
     Returns:
         Status response
     """
-    state = _read_control_state()
+    state = await _read_control_state()
     state["paused"] = True
-    _write_control_state(state)
-    
+    await _write_control_state(state)
+
     logger.info("Trading engine paused via API")
     
     return {
@@ -980,10 +999,10 @@ async def resume_engine() -> Dict[str, Any]:
     Returns:
         Status response
     """
-    state = _read_control_state()
+    state = await _read_control_state()
     state["paused"] = False
-    _write_control_state(state)
-    
+    await _write_control_state(state)
+
     logger.info("Trading engine resumed via API")
     
     return {
@@ -1006,8 +1025,8 @@ async def toggle_kill_switch(request: KillSwitchRequest) -> Dict[str, Any]:
     if request.action not in ("enable", "disable"):
         raise HTTPException(status_code=400, detail="action must be 'enable' or 'disable'")
     
-    state = _read_control_state()
-    
+    state = await _read_control_state()
+
     if request.action == "enable":
         state["kill_switch_active"] = True
         state["kill_switch_reason"] = request.reason or "Manual kill switch enabled via API"
@@ -1016,8 +1035,8 @@ async def toggle_kill_switch(request: KillSwitchRequest) -> Dict[str, Any]:
         state["kill_switch_active"] = False
         state["kill_switch_reason"] = None
         logger.info("Manual kill switch disabled via API")
-    
-    _write_control_state(state)
+
+    await _write_control_state(state)
     
     return {
         "kill_switch_active": state["kill_switch_active"],
@@ -1034,7 +1053,7 @@ async def get_control_status() -> Dict[str, Any]:
     Returns:
         Dictionary with paused, kill_switch_active, and kill_switch_reason
     """
-    state = _read_control_state()
+    state = await _read_control_state()
     return {
         "paused": state.get("paused", False),
         "kill_switch_active": state.get("kill_switch_active", False),

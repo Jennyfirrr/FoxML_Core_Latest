@@ -26,7 +26,7 @@ impl ServiceManager {
     pub fn new(service_name: String) -> Self {
         let status = Self::check_status(&service_name);
         let status_text = Self::get_status_text(&service_name);
-        
+
         Self {
             service_name,
             status,
@@ -34,12 +34,25 @@ impl ServiceManager {
         }
     }
 
+    /// Check if systemctl is available on this system
+    fn has_systemctl() -> bool {
+        Command::new("systemctl")
+            .arg("--version")
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
+    }
+
     /// Check service status
     fn check_status(service_name: &str) -> ServiceStatus {
+        if !Self::has_systemctl() {
+            return ServiceStatus::Unknown;
+        }
+
         let output = Command::new("systemctl")
             .args(&["is-active", service_name])
             .output();
-        
+
         match output {
             Ok(output) => {
                 let status_str = String::from_utf8_lossy(&output.stdout);
@@ -57,10 +70,14 @@ impl ServiceManager {
 
     /// Get detailed status text
     fn get_status_text(service_name: &str) -> String {
+        if !Self::has_systemctl() {
+            return "systemctl not available on this system".to_string();
+        }
+
         let output = Command::new("systemctl")
             .args(&["status", service_name, "--no-pager", "-l"])
             .output();
-        
+
         match output {
             Ok(output) => {
                 String::from_utf8_lossy(&output.stdout)
