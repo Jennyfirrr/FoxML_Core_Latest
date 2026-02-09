@@ -17,7 +17,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -94,7 +94,7 @@ class TradeUpdate:
             filled_avg_price=float(order["filled_avg_price"]) if order.get("filled_avg_price") else None,
             order_type=order.get("type", ""),
             status=order.get("status", ""),
-            timestamp=datetime.fromisoformat(data.get("timestamp", datetime.now().isoformat()).replace("Z", "+00:00")),
+            timestamp=datetime.fromisoformat(data.get("timestamp", datetime.now(timezone.utc).isoformat()).replace("Z", "+00:00")),
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -184,7 +184,7 @@ class AlpacaStreamClient:
             logger.error("Cannot connect: Alpaca API credentials not configured")
             self._emit_event(AlpacaEvent(
                 event_type=AlpacaEventType.ERROR,
-                timestamp=datetime.now(),
+                timestamp=datetime.now(timezone.utc),
                 data={"error": "API credentials not configured"},
             ))
             return
@@ -198,7 +198,7 @@ class AlpacaStreamClient:
                 logger.error(f"WebSocket error: {e}")
                 self._emit_event(AlpacaEvent(
                     event_type=AlpacaEventType.DISCONNECTED,
-                    timestamp=datetime.now(),
+                    timestamp=datetime.now(timezone.utc),
                     data={"error": str(e)},
                 ))
 
@@ -229,7 +229,7 @@ class AlpacaStreamClient:
 
             self._emit_event(AlpacaEvent(
                 event_type=AlpacaEventType.CONNECTED,
-                timestamp=datetime.now(),
+                timestamp=datetime.now(timezone.utc),
                 data={"url": url, "paper": self.config.paper},
             ))
 
@@ -285,7 +285,7 @@ class AlpacaStreamClient:
                 logger.info("Alpaca WebSocket authenticated")
                 self._emit_event(AlpacaEvent(
                     event_type=AlpacaEventType.AUTHENTICATED,
-                    timestamp=datetime.now(),
+                    timestamp=datetime.now(timezone.utc),
                     data={"status": "authorized"},
                 ))
                 # Subscribe to streams after auth
@@ -294,7 +294,7 @@ class AlpacaStreamClient:
                 logger.error(f"Authentication failed: {data}")
                 self._emit_event(AlpacaEvent(
                     event_type=AlpacaEventType.ERROR,
-                    timestamp=datetime.now(),
+                    timestamp=datetime.now(timezone.utc),
                     data={"error": "Authentication failed", "details": data},
                 ))
 

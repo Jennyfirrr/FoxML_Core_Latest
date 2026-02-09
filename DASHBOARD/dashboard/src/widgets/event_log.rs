@@ -92,7 +92,8 @@ impl EventLog {
             // Truncate message if too long
             let max_msg_len = (area.width as usize).saturating_sub(12); // [HH:MM:SS] + space
             let display_msg = if message.len() > max_msg_len {
-                format!("{}...", &message[..max_msg_len.saturating_sub(3)])
+                let truncated: String = message.chars().take(max_msg_len.saturating_sub(3)).collect();
+                format!("{}...", truncated)
             } else {
                 message
             };

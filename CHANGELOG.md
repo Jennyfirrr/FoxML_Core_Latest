@@ -4,9 +4,9 @@ All notable changes to FoxML Core will be documented in this file.
 
 ## 2026-02-09
 
-### Dashboard Hardening & Bug Fixes (Rounds 1-3)
+### Dashboard Hardening & Bug Fixes (Rounds 1-4)
 
-Three rounds of systematic audits and fixes across the Rust TUI and Python IPC bridge, addressing 45 issues total.
+Four rounds of systematic audits and fixes across the Rust TUI and Python IPC bridge, addressing 47 issues total.
 
 #### Fixed
 - **Fake command palette commands** - 5 commands (`trading.pause`, `trading.resume`, `training.stop`, `config.edit`, `nav.models`) now call real logic instead of showing fake success notifications
@@ -22,6 +22,8 @@ Three rounds of systematic audits and fixes across the Rust TUI and Python IPC b
 - **`get_recent_events(count=0)` returns all events** - Added guard: `if count <= 0: return []`
 - **Timestamp sorting with empty string default** - Changed default from `""` to `"0"` so missing timestamps sort last
 - **Silent date parse error** - Invalid `since` parameter now logs a warning instead of bare `pass`
+- **Timezone-naive datetimes in Alpaca stream** - 6 occurrences of `datetime.now()` changed to `datetime.now(timezone.utc)` in alpaca_stream.py
+- **UTF-8 string slicing panic** - Event log and risk gauge truncation now uses `.chars().take(n)` instead of byte-index slicing that panics on multi-byte characters
 
 #### Added
 - **Bearer token auth on control endpoints** - Bridge generates random token on startup, writes to `/tmp/foxml_bridge_token`; Rust client reads and sends `Authorization: Bearer <token>` on POST requests

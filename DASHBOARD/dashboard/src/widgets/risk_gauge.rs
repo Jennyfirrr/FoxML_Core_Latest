@@ -110,7 +110,8 @@ impl RiskGauge {
 
             let msg = format!("{} {}", icon, warning.message);
             let truncated = if msg.len() > area.width as usize {
-                format!("{}...", &msg[..area.width as usize - 3])
+                let chars: String = msg.chars().take((area.width as usize).saturating_sub(3)).collect();
+                format!("{}...", chars)
             } else {
                 msg
             };
