@@ -1517,11 +1517,13 @@ def train_and_evaluate_models(
                     from TRAINING.common.utils.performance_audit import get_auditor
                     auditor = get_auditor()
                     if auditor.enabled:
+                        # Include target so different targets get distinct fingerprints
                         fingerprint_kwargs = {
                             'data_shape': X.shape,
                             'n_features': X.shape[1] if len(X.shape) > 1 else None,
                             'importance_type': 'PredictionValuesChange',
-                            'stage': 'leakage_detection'
+                            'stage': 'leakage_detection',
+                            'target': target_column,
                         }
                         fingerprint = auditor._compute_fingerprint('catboost.get_feature_importance', **fingerprint_kwargs)
                 except Exception:
@@ -1541,7 +1543,8 @@ def train_and_evaluate_models(
                         cols=X.shape[1] if len(X.shape) > 1 else None,
                         stage='leakage_detection',
                         cache_hit=False,
-                        input_fingerprint=fingerprint
+                        input_fingerprint=fingerprint,
+                        target=target_column,
                     )
             else:
                 importance = np.array([])

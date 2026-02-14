@@ -2677,10 +2677,16 @@ def train_and_evaluate_models(
                 from TRAINING.common.utils.performance_audit import get_auditor
                 auditor = get_auditor()
                 if auditor.enabled:
+                    # Include target/symbol/view so different evaluation contexts
+                    # get distinct fingerprints (avoids false-positive "redundancy" alerts)
+                    view_str = view.value if hasattr(view, 'value') else str(view)
                     fingerprint_kwargs = {
                         'data_shape': X.shape,
                         'n_features_sampled': min(10, X.shape[1]),
-                        'stage': 'target_ranking'
+                        'stage': 'target_ranking',
+                        'target': target_column,
+                        'symbol': symbol,
+                        'view': view_str,
                     }
                     fingerprint = auditor._compute_fingerprint('neural_network.permutation_importance', **fingerprint_kwargs)
             except Exception:
@@ -2704,6 +2710,7 @@ def train_and_evaluate_models(
             # Track call
             if auditor and auditor.enabled:
                 perm_elapsed = time.time() - perm_start_time
+                view_str = view.value if hasattr(view, 'value') else str(view)
                 auditor.track_call(
                     func_name='neural_network.permutation_importance',
                     duration=perm_elapsed,
@@ -2712,7 +2719,9 @@ def train_and_evaluate_models(
                     stage='target_ranking',
                     cache_hit=False,
                     input_fingerprint=fingerprint,
-                    n_features_sampled=min(10, X.shape[1])
+                    target=target_column,
+                    symbol=symbol,
+                    view=view_str,
                 )
             
             # Normalize importance to match sampled features
@@ -3671,11 +3680,17 @@ def train_and_evaluate_models(
                     from TRAINING.common.utils.performance_audit import get_auditor
                     auditor = get_auditor()
                     if auditor.enabled:
+                        # Include target/symbol/view so different evaluation contexts
+                        # get distinct fingerprints (avoids false-positive "redundancy" alerts)
+                        view_str = view.value if hasattr(view, 'value') else str(view)
                         fingerprint_kwargs = {
                             'data_shape': X.shape,
                             'n_features': len(feature_names),
                             'importance_type': 'PredictionValuesChange',
-                            'stage': 'target_ranking'
+                            'stage': 'target_ranking',
+                            'target': target_column,
+                            'symbol': symbol,
+                            'view': view_str,
                         }
                         fingerprint = auditor._compute_fingerprint('catboost.get_feature_importance', **fingerprint_kwargs)
                 except Exception:
@@ -3711,6 +3726,7 @@ def train_and_evaluate_models(
                     # Track call
                     if auditor and auditor.enabled:
                         importance_elapsed = time.time() - importance_start_time
+                        view_str = view.value if hasattr(view, 'value') else str(view)
                         auditor.track_call(
                             func_name='catboost.get_feature_importance',
                             duration=importance_elapsed,
@@ -3718,7 +3734,10 @@ def train_and_evaluate_models(
                             cols=len(feature_names),
                             stage='target_ranking',
                             cache_hit=False,
-                            input_fingerprint=fingerprint
+                            input_fingerprint=fingerprint,
+                            target=target_column,
+                            symbol=symbol,
+                            view=view_str,
                         )
                 except Exception as e:
                     logger.warning(f"  ⚠️  CatBoost feature importance computation failed: {e}")

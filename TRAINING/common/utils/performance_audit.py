@@ -35,6 +35,10 @@ class CallRecord:
     cache_hit: bool = False
     input_fingerprint: Optional[str] = None
     timestamp: float = field(default_factory=time.time)
+    # Context fields for distinguishing structurally necessary calls from redundant ones
+    target: Optional[str] = None
+    symbol: Optional[str] = None
+    view: Optional[str] = None
 
 
 class PerformanceAuditor:
@@ -67,11 +71,14 @@ class PerformanceAuditor:
         stage: str = "unknown",
         cache_hit: bool = False,
         input_fingerprint: Optional[str] = None,
+        target: Optional[str] = None,
+        symbol: Optional[str] = None,
+        view: Optional[str] = None,
         **kwargs
     ) -> None:
         """
         Track a function call.
-        
+
         Args:
             func_name: Name of the function
             duration: Duration in seconds
@@ -80,15 +87,18 @@ class PerformanceAuditor:
             stage: Stage name (e.g., "feature_selection", "target_ranking", "training")
             cache_hit: Whether this was a cache hit
             input_fingerprint: Optional pre-computed fingerprint
+            target: Target column name (for distinguishing per-target work)
+            symbol: Symbol name (for distinguishing per-symbol work)
+            view: View type (e.g., "CROSS_SECTIONAL", "SYMBOL_SPECIFIC")
             **kwargs: Additional metadata to include in fingerprint
         """
         if not self.enabled:
             return
-        
+
         # Compute fingerprint if not provided
         if input_fingerprint is None and kwargs:
             input_fingerprint = self._compute_fingerprint(func_name, **kwargs)
-        
+
         record = CallRecord(
             func_name=func_name,
             duration=duration,
@@ -96,7 +106,10 @@ class PerformanceAuditor:
             cols=cols,
             stage=stage,
             cache_hit=cache_hit,
-            input_fingerprint=input_fingerprint
+            input_fingerprint=input_fingerprint,
+            target=target,
+            symbol=symbol,
+            view=view,
         )
         self.calls.append(record)
     
@@ -152,7 +165,13 @@ class PerformanceAuditor:
             if len(calls) >= min_calls:
                 total_duration = sum(c.duration for c in calls)
                 avg_duration = total_duration / len(calls)
-                
+
+                # Collect unique context values to help diagnose whether
+                # these are truly redundant vs. structurally different calls
+                unique_targets = sorted(set(c.target for c in calls if c.target))
+                unique_symbols = sorted(set(c.symbol for c in calls if c.symbol))
+                unique_views = sorted(set(c.view for c in calls if c.view))
+
                 multipliers[func_name] = multipliers.get(func_name, [])
                 multipliers[func_name].append({
                     'fingerprint': fingerprint[:16],  # Short hash for readability
@@ -164,7 +183,10 @@ class PerformanceAuditor:
                     'rows': calls[0].rows,
                     'cols': calls[0].cols,
                     'cache_hits': sum(1 for c in calls if c.cache_hit),
-                    'cache_misses': sum(1 for c in calls if not c.cache_hit)
+                    'cache_misses': sum(1 for c in calls if not c.cache_hit),
+                    'targets': unique_targets,
+                    'symbols': unique_symbols,
+                    'views': unique_views,
                 })
         
         return multipliers
@@ -279,7 +301,10 @@ class PerformanceAuditor:
                     'stage': c.stage,
                     'cache_hit': c.cache_hit,
                     'fingerprint': c.input_fingerprint[:16] if c.input_fingerprint else None,
-                    'timestamp': c.timestamp
+                    'timestamp': c.timestamp,
+                    'target': c.target,
+                    'symbol': c.symbol,
+                    'view': c.view,
                 }
                 for c in self.calls
             ]

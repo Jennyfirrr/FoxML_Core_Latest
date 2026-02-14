@@ -708,6 +708,7 @@ class RankingHarness:
         if auditor and auditor.enabled:
             rows = X.shape[0] if X is not None else None
             cols = len(feature_names_out) if feature_names_out else None
+            view_str = self.view.value if hasattr(self.view, 'value') else str(self.view)
             auditor.track_call(
                 func_name='RankingHarness.build_panel',
                 duration=build_duration,
@@ -715,7 +716,10 @@ class RankingHarness:
                 cols=cols,
                 stage=self.job_type,  # 'rank_targets' or 'rank_features'
                 cache_hit=False,  # build_panel doesn't use cache currently
-                input_fingerprint=fingerprint
+                input_fingerprint=fingerprint,
+                target=self.target_column,
+                symbol=self.symbol,
+                view=view_str,
             )
         
         return X, y, feature_names_out, symbols_array, time_vals, mtf_data, detected_interval, resolved_config, resolved_data_config

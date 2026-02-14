@@ -4,6 +4,12 @@ All notable changes to FoxML Core will be documented in this file.
 
 ## 2026-02-13
 
+### Performance Audit Improvements
+
+#### Fixed
+- **False-positive redundancy alerts in performance audit** - Fingerprints for `catboost.get_feature_importance`, `neural_network.permutation_importance`, and `RankingHarness.build_panel` now include target/symbol/view context, so structurally necessary calls across different targets and symbols are no longer flagged as wasted compute
+- **Audit report now shows context** - Multiplier findings include `targets`, `symbols`, and `views` arrays; `all_calls` entries include `target`, `symbol`, and `view` fields for easier diagnosis
+
 ### Pipeline Fixes
 
 #### Fixed
