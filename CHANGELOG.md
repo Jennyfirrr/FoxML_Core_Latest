@@ -2,13 +2,54 @@
 
 All notable changes to FoxML Core will be documented in this file.
 
+## 2026-02-14
+
+### Documentation
+
+#### Added
+- **HTML documentation book** — `bin/build-book.sh` compiles all ~800 markdown files into a browsable HTML book with MkDocs Material theme, full-text search, dark/light mode, and hierarchical navigation across 11 parts (executive overview through appendices)
+- **PDF documentation pipeline** — `bin/build-book-pdf.sh` produces a single PDF with table of contents via Pandoc + XeLaTeX, covering key documents in reading order
+- **mkdocs.yml configuration** — Complete navigation tree covering DOCS/, CONFIG/, TRAINING/, LIVE_TRADING/, DASHBOARD/, INTERNAL/, skills, and implementation plans
+
+### RAW_SEQUENCE Mode
+
+#### Fixed
+- **3D raw OHLCV preprocessing corruption in TF sequence trainers** — `BaseModelTrainer.preprocess_data()` assumed 2D `(N, F)` input, silently destroying 3D `(N, T, 5)` raw OHLCV sequences: `colmask` became a 2D matrix, boolean indexing flattened the array to `(N, T*5)`, and the imputer fit on corrupted data. Added a 3D early-return branch that skips column masking and imputation, preserving sequence structure for CNN1D, LSTM, and Transformer trainers
+- **`predict()` crash with raw OHLCV models** — CNN1D, LSTM, and Transformer `predict()` methods unconditionally flattened 3D input to 2D for preprocessing, then reshaped to `(N, T*5, 1)` instead of `(N, T, 5)`, causing `IndexError` during `post_fit_sanity`. Now uses `_is_3d_input` flag to bypass 2D preprocessing in raw sequence mode
+- **Hardcoded `Input(shape=(dim, 1))` in sequence model architectures** — CNN1D, LSTM, and Transformer `_build_model()` always used 1 channel, ignoring multi-channel raw OHLCV input. Added `n_channels` parameter so models build `Input(shape=(seq_len, 5))` for raw OHLCV
+- **`input_mode` missing from `model_meta.json`** — Training artifacts lacked `input_mode`, `sequence_length`, `sequence_channels`, and `sequence_normalization` fields required by LIVE_TRADING inference. Now populated from `routing_meta` when `input_mode=raw_sequence`
+
 ## 2026-02-13
+
+### RAW_SEQUENCE Mode
+
+#### Added
+- **Auto-clamp sequence length to trading session** — New `auto_clamp` config knob under `pipeline.sequence`. When enabled with `gap_handling: "split"`, automatically reduces `seq_len` to fit within a single US trading session (390 min × 90%), preventing 0-sequence output when configured length exceeds session capacity. At 5m interval: clamps to 70 bars.
+
+### Configuration
+
+#### Changed
+- **Default GPU config set to CPU-only** — `gpu.cuda_visible_devices` changed from `"0"` to `"-1"` in `CONFIG/pipeline/gpu.yaml` for environments without CUDA-enabled GPUs
+
+### Experiment Configs
+
+#### Added
+- **Raw OHLCV 4GB experiment config** (`raw_ohlcv_4gb.yaml`) — Trains LSTM/Transformer/CNN1D on all 10 symbols with raw OHLCV bars, sized for a ~4GB RAM footprint (96-bar sequences, medium model capacity, lazy loading)
+- **Raw OHLCV experiment template** (`_template_raw_ohlcv.yaml`) — Self-contained template for creating raw OHLCV sequence experiments with memory sizing guide, parameter documentation, and tuning knobs
 
 ### Performance Audit Improvements
 
 #### Fixed
 - **False-positive redundancy alerts in performance audit** - Fingerprints for `catboost.get_feature_importance`, `neural_network.permutation_importance`, and `RankingHarness.build_panel` now include target/symbol/view context, so structurally necessary calls across different targets and symbols are no longer flagged as wasted compute
 - **Audit report now shows context** - Multiplier findings include `targets`, `symbols`, and `views` arrays; `all_calls` entries include `target`, `symbol`, and `view` fields for easier diagnosis
+
+### RAW_SEQUENCE Mode
+
+#### Fixed
+- **`discover_targets` UnboundLocalError in RAW_SEQUENCE mode** — A redundant local import of `discover_targets` inside an `elif` branch caused Python to shadow the module-level import throughout the entire method, making the auto-discovery fallback crash with "cannot access local variable" when target ranking is skipped
+- **RAW_SEQUENCE mode silently falling back to FEATURES mode** — Training function received `ExperimentConfig` dataclass (no `pipeline` field) instead of raw YAML dict, so `get_input_mode()` couldn't detect `pipeline.input_mode: raw_sequence` and defaulted to FEATURES; all targets then failed with 0 features from registry
+- **`write_atomic_json` UnboundLocalError in training summary** — A local import from non-existent `TRAINING.common.utils.file_io` shadowed the working module-level import from `file_utils`, causing the training results summary write to crash
+- **Lazy loading column projection missing OHLCV columns** — In RAW_SEQUENCE mode with lazy loading, the `__RAW_OHLCV_SEQUENCE__` sentinel placeholder was passed to `load_for_target` as a feature name; the loader silently dropped the non-existent column, never loading actual OHLCV data. Now detects RAW_SEQUENCE mode early and substitutes real channel names (open, high, low, close, volume)
 
 ### Pipeline Fixes
 

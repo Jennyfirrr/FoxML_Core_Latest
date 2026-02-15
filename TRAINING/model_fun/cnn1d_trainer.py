@@ -47,20 +47,19 @@ class CNN1DTrainer(BaseModelTrainer):
         self.config.setdefault("learning_rate", 1e-3)
         self.config.setdefault("patience", 10)
 
-    def train(self, X_tr: np.ndarray, y_tr: np.ndarray, 
+    def train(self, X_tr: np.ndarray, y_tr: np.ndarray,
               X_va=None, y_va=None, feature_names: List[str] = None, **kwargs) -> Any:
         from common.threads import ensure_gpu_visible
-        
+
         # Ensure GPU is visible (restore if hidden by prior CPU-only family)
         gpu_available = ensure_gpu_visible("CNN1D")
-        
+
         # 1) Preprocess data
         X_tr, y_tr = self.preprocess_data(X_tr, y_tr)
-        self.feature_names = feature_names or [f"f{i}" for i in range(X_tr.shape[1])]
-        
+
         # 2) Configure TensorFlow
         configure_tf(cpu_only=kwargs.get("cpu_only", False) or not gpu_available)
-        
+
         # 3) Split only if no external validation provided
         if X_va is None or y_va is None:
             # Load test split params from config
@@ -68,21 +67,22 @@ class CNN1DTrainer(BaseModelTrainer):
             X_tr, X_va, y_tr, y_va = train_test_split(
                 X_tr, y_tr, test_size=test_size, random_state=seed
             )
-        
+
         # 4) Reshape for CNN1D
         # Check if input is already 3D (raw OHLCV sequence mode)
         if X_tr.ndim == 3:
             # Already 3D (N, seq_len, channels) - raw sequence mode
-            # Don't reshape, use directly
+            self.feature_names = feature_names or [f"ch{i}" for i in range(X_tr.shape[2])]
             logger.info(f"[CNN1D] Input already 3D: {X_tr.shape} (raw sequence mode)")
         else:
             # 2D (N, F) - traditional feature mode
+            self.feature_names = feature_names or [f"f{i}" for i in range(X_tr.shape[1])]
             # Reshape to (N, F, 1) where features are treated as time steps
             X_tr = X_tr.reshape(X_tr.shape[0], X_tr.shape[1], 1)
             X_va = X_va.reshape(X_va.shape[0], X_va.shape[1], 1)
-        
-        # 5) Build model with safe defaults
-        model = self._build_model(X_tr.shape[1])
+
+        # 5) Build model with correct input shape
+        model = self._build_model(X_tr.shape[1], n_channels=X_tr.shape[2])
         
         # 6) Train with callbacks
         callbacks = [
@@ -108,23 +108,27 @@ class CNN1DTrainer(BaseModelTrainer):
     def predict(self, X: np.ndarray) -> np.ndarray:
         if not self.is_trained:
             raise ValueError("Model not trained yet")
-        # Handle 3D input (from post_fit_sanity) by reshaping to 2D for preprocessing
-        # CNN1D uses shape (samples, timesteps, 1), so reshape to (samples, timesteps)
-        if len(X.shape) == 3:
-            X = X.reshape(X.shape[0], X.shape[1])
-        Xp, _ = self.preprocess_data(X, None)
-        Xp = Xp.reshape(Xp.shape[0], Xp.shape[1], 1)
+        from TRAINING.common.safety import guard_features
+        if self._is_3d_input:
+            # Raw sequence mode: skip 2D preprocessing, pass 3D directly
+            Xp = guard_features(np.ascontiguousarray(X, dtype=np.float32))
+        else:
+            # Feature mode: existing 2D preprocessing path
+            if X.ndim == 3:
+                X = X.reshape(X.shape[0], X.shape[1])
+            Xp, _ = self.preprocess_data(X, None)
+            Xp = Xp.reshape(Xp.shape[0], Xp.shape[1], 1)
         preds = self.model.predict(Xp, verbose=0).ravel()
         return np.nan_to_num(preds, nan=0.0).astype(np.float32)
 
-    def _build_model(self, input_dim: int) -> tf.keras.Model:
+    def _build_model(self, input_dim: int, n_channels: int = 1) -> tf.keras.Model:
         """Build CNN1D model with safe defaults"""
         import os
         # Set TF seed for determinism (TF_DETERMINISTIC_OPS=1 requires explicit seed)
         seed = int(os.environ.get("PYTHONHASHSEED", "42"))
         tf.random.set_seed(seed)
 
-        inputs = tf.keras.Input(shape=(input_dim, 1), name="x")
+        inputs = tf.keras.Input(shape=(input_dim, n_channels), name="x")
         x = inputs
         
         for filters in self.config["filters"]:

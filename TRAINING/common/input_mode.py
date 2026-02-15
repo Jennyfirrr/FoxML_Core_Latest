@@ -210,6 +210,7 @@ def get_raw_sequence_config(
             "normalization": str,
             "gap_handling": str,
             "gap_tolerance": float,
+            "auto_clamp": bool,
         }
     """
     try:
@@ -243,6 +244,10 @@ def get_raw_sequence_config(
                         "gap_tolerance",
                         get_cfg("pipeline.sequence.gap_tolerance", default=1.5),
                     ),
+                    "auto_clamp": exp_seq.get(
+                        "auto_clamp",
+                        get_cfg("pipeline.sequence.auto_clamp", default=False),
+                    ),
                 }
 
         # Fall back to pipeline config
@@ -255,6 +260,7 @@ def get_raw_sequence_config(
             "normalization": get_cfg("pipeline.sequence.normalization", default="returns"),
             "gap_handling": get_cfg("pipeline.sequence.gap_handling", default="split"),
             "gap_tolerance": get_cfg("pipeline.sequence.gap_tolerance", default=1.5),
+            "auto_clamp": get_cfg("pipeline.sequence.auto_clamp", default=False),
         }
 
     except ImportError:
@@ -265,4 +271,5 @@ def get_raw_sequence_config(
             "normalization": "returns",
             "gap_handling": "split",
             "gap_tolerance": 1.5,
+            "auto_clamp": False,
         }

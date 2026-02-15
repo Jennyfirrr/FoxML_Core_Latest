@@ -101,6 +101,7 @@ class BaseModelTrainer(ABC):
         self.target: str = ""
         self.imputer: Optional[SimpleImputer] = None
         self.colmask: Optional[np.ndarray] = None
+        self._is_3d_input: bool = False
         self.family_name: str = getattr(self, '__class__', type(self)).__name__.replace("Trainer", "")
         
     def _threads(self) -> int:
@@ -369,6 +370,7 @@ class BaseModelTrainer(ABC):
             'target': self.target,
             'imputer': self.imputer,
             'colmask': self.colmask,
+            '_is_3d_input': self._is_3d_input,
             'trainer_class': self.__class__.__name__
         }
         
@@ -385,6 +387,7 @@ class BaseModelTrainer(ABC):
         self.target = model_data.get('target', '')
         self.imputer = model_data.get('imputer', None)
         self.colmask = model_data.get('colmask', None)
+        self._is_3d_input = model_data.get('_is_3d_input', False)
         self.is_trained = True
         
         logger.info(f"Model loaded from {filepath}")
@@ -414,15 +417,37 @@ class BaseModelTrainer(ABC):
         # Cast to float32 for speed (2x memory reduction + faster BLAS)
         # Use C-contiguous for optimal cache performance
         X = np.ascontiguousarray(X, dtype=np.float32)
-        
+
+        # 3D input (raw OHLCV sequences): skip column mask / imputer
+        if X.ndim == 3:
+            if y is not None:
+                # Training mode: filter NaN targets, set 3D flag
+                y = np.asarray(y, dtype=np.float64).ravel()
+                mask = np.isfinite(y)
+                if not mask.any():
+                    raise ValueError("No finite targets after filtering")
+                X, y = X[mask], y[mask]
+                self.colmask = None
+                self.imputer = None
+                self._is_3d_input = True
+                X = guard_features(X)
+                y = guard_targets(y)
+                logger.info("Preprocessed 3D train: %d seqs, shape %s", X.shape[0], X.shape[1:])
+                return X, y
+            else:
+                # Inference mode: pass through
+                X = guard_features(X)
+                return X, None
+
         if y is not None:
-            # Training mode: fit imputer and colmask
+            # Training mode: fit imputer and colmask (2D path)
+            self._is_3d_input = False
             y = np.asarray(y, dtype=np.float64).ravel()
             mask = np.isfinite(y)
             if not mask.any():
                 raise ValueError("No finite targets after filtering")
             X, y = X[mask], y[mask]
-            
+
             # Drop all-NaN columns on TRAIN only
             self.colmask = np.isfinite(X).any(axis=0)
             if not self.colmask.any():

@@ -607,6 +607,18 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                 all_features.update(sym_features)
                         target_feature_list = sorted(all_features)
 
+            # RAW_SEQUENCE mode: Replace sentinel placeholder with actual OHLCV channels
+            # so the lazy loader projects the right columns from parquet
+            input_mode = get_input_mode(experiment_config=experiment_config)
+            if input_mode == InputMode.RAW_SEQUENCE:
+                seq_config = get_raw_sequence_config(experiment_config)
+                ohlcv_channels = seq_config.get("channels", ["open", "high", "low", "close", "volume"])
+                target_feature_list = sorted(ohlcv_channels)
+                logger.info(
+                    f"🔢 RAW_SEQUENCE mode: Loading OHLCV channels {ohlcv_channels} "
+                    f"instead of computed features for {target}"
+                )
+
             if not target_feature_list:
                 logger.warning(
                     f"⚠️ Lazy loading: No features found for {target} in target_features. "
@@ -1998,7 +2010,6 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                     model_path=model_path,
                 )
 
-                from TRAINING.common.utils.file_io import write_atomic_json
                 meta_path = model_dir / "model_meta.json"
                 write_atomic_json(meta_path, metadata)
 
@@ -2512,10 +2523,16 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                     "rank_method": "scipy_dense",
                                     "feature_importance": {}
                                 }
+                                # CONTRACT: input_mode fields for LIVE_TRADING inference
+                                if routing_meta and routing_meta.get("input_mode") == "raw_sequence":
+                                    metadata["input_mode"] = "raw_sequence"
+                                    metadata["sequence_length"] = routing_meta.get("sequence_length")
+                                    metadata["sequence_channels"] = routing_meta.get("sequence_channels")
+                                    metadata["sequence_normalization"] = routing_meta.get("sequence_normalization")
                                 # Save metadata to canonical location - DETERMINISM: atomic write
                                 write_atomic_json(meta_path, metadata)
                                 logger.info(f"💾 Metadata saved: {meta_path}")
-                                    
+
                             else:  # TensorFlow/Scikit-learn - JSON format (CONTRACT: must be JSON)
                                 # Save metadata to canonical location using ArtifactPaths
                                 meta_path = ArtifactPaths.metadata_file(model_dir)
@@ -2544,6 +2561,12 @@ def train_models_for_interval_comprehensive(interval: str, targets: List[str],
                                     "n_rows_train": len(X),
                                     "train_timestamps": int(np.unique(time_vals).size) if time_vals is not None else len(X),
                                 }
+                                # CONTRACT: input_mode fields for LIVE_TRADING inference
+                                if routing_meta and routing_meta.get("input_mode") == "raw_sequence":
+                                    metadata["input_mode"] = "raw_sequence"
+                                    metadata["sequence_length"] = routing_meta.get("sequence_length")
+                                    metadata["sequence_channels"] = routing_meta.get("sequence_channels")
+                                    metadata["sequence_normalization"] = routing_meta.get("sequence_normalization")
                                 # CONTRACT: Use JSON format for model_meta.json, not joblib
                                 write_atomic_json(meta_path, metadata)
                                 logger.info(f"💾 Metadata saved: {meta_path}")

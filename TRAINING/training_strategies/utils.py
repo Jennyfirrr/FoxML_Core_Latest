@@ -592,6 +592,7 @@ def build_sequences_from_ohlcv(
     symbol: str = None,
     handle_gaps: bool = True,
     gap_tolerance: float = 1.5,
+    auto_clamp: bool = False,
 ) -> tuple:
     """
     Build sequences from raw OHLCV data for sequence model training.
@@ -610,6 +611,10 @@ def build_sequences_from_ohlcv(
         symbol: Optional symbol for logging
         handle_gaps: If True, split sequences at time gaps (don't span gaps)
         gap_tolerance: Gap detection tolerance multiplier (default 1.5)
+        auto_clamp: If True and gap_handling="split", clamp seq_len to fit within
+            a single US trading session (390 minutes). Uses 90% of max bars to
+            allow rolling windows. Prevents 0-sequence output when seq_len
+            exceeds session length.
 
     Returns:
         Tuple of:
@@ -674,6 +679,20 @@ def build_sequences_from_ohlcv(
         from TRAINING.common.interval import minutes_to_bars
         seq_len = minutes_to_bars(seq_len_minutes, interval_minutes)
         local_logger.debug(f"Derived seq_len={seq_len} bars from {seq_len_minutes}m @ {interval_minutes}m")
+
+    # Auto-clamp seq_len to fit within a single US trading session
+    if auto_clamp and handle_gaps and interval_minutes is not None:
+        session_minutes = 390  # US market: 9:30-16:00
+        max_bars = session_minutes // interval_minutes
+        clamped = int(max_bars * 0.9)
+        if seq_len > clamped:
+            symbol_str = f" [{symbol}]" if symbol else ""
+            local_logger.warning(
+                f"Auto-clamp{symbol_str}: seq_len={seq_len} exceeds session capacity "
+                f"(max_bars={max_bars} @ {interval_minutes}m, 90%={clamped}). "
+                f"Clamping to {clamped} bars."
+            )
+            seq_len = clamped
 
     # Validate required columns
     required_cols = ["ts"] + channels

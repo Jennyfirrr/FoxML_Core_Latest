@@ -142,7 +142,16 @@
       "Bash(pip3 install:*)",
       "Bash(conda info:*)",
       "Bash(/opt/anaconda/bin/python -m pytest:*)",
-      "Bash(/opt/anaconda/bin/python:*)"
+      "Bash(/opt/anaconda/bin/python:*)",
+      "Bash(test:*)",
+      "Bash(while ps:*)",
+      "Bash(do sleep 5)",
+      "Bash(do echo \"=== $target ===\" find /home/jennifer/FoxML/private/TRAINING/results/demo_check/intelligent_output_20260213_175155_c2bfed8f/targets/$target/models -type f)",
+      "Bash(do echo \"=== $target METRICS ===\" find /home/jennifer/FoxML/private/TRAINING/results/demo_check/intelligent_output_20260213_175155_c2bfed8f/targets/$target/metrics -type f)",
+      "Bash(do echo \"=== $target REPRODUCIBILITY ===\" ls -1 /home/jennifer/FoxML/private/TRAINING/results/demo_check/intelligent_output_20260213_175155_c2bfed8f/targets/$target/reproducibility/)",
+      "Bash(compute\".\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(/tmp/final_check.py:*)",
+      "Bash(/opt/anaconda/bin/pip install:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

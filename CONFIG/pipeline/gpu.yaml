@@ -3,7 +3,7 @@
 
 gpu:
   # Device Selection
-  cuda_visible_devices: "0"  # GPU IDs to use (comma-separated, "-1" to hide GPU)
+  cuda_visible_devices: "-1"  # GPU IDs to use (comma-separated, "-1" to hide GPU)
   tf_visible_device_list: null  # null = mirrors CUDA_VISIBLE_DEVICES
   
   # TensorFlow GPU Settings

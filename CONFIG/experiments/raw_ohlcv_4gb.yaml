@@ -1,0 +1,192 @@
+# Raw OHLCV Sequence Training — ~4GB RAM Budget
+# Purpose: Train LSTM/Transformer/CNN1D on raw OHLCV bars, sized for a 4GB memory footprint
+#
+# MEMORY ESTIMATE (~3.5–4.0 GB peak):
+#   Python + TF/torch base:            ~1.0 GB
+#   Sequence arrays (115k × 70 × 5):   ~0.15 GB
+#   Train/val copies + data loading:    ~1.1 GB
+#   Model + optimizer + gradients:      ~0.5 GB
+#   Batch buffers + misc:              ~0.3 GB
+#   ─────────────────────────────────────────────
+#   Estimated peak:                    ~3.6 GB
+#
+# KEY KNOBS (to adjust memory usage):
+#   ↑ memory: increase max_rows_per_symbol, length_minutes, or batch_size
+#   ↓ memory: reduce symbols list, max_rows_per_symbol, or length_minutes
+#
+# Usage:
+#   bin/run_deterministic.sh python TRAINING/orchestration/intelligent_trainer.py \
+#     --experiment-config raw_ohlcv_4gb --output-dir TRAINING/results/raw_4gb
+
+experiment:
+  name: raw_ohlcv_4gb
+  description: "Raw OHLCV sequences, 10 symbols, ~4GB RAM budget"
+
+# ============================================================================
+# PIPELINE — RAW SEQUENCE MODE
+# ============================================================================
+pipeline:
+  input_mode: "raw_sequence"
+
+  sequence:
+    # 70 bars × 5 min = 350 minutes (~5.8 hours — fits within a 6.5hr US trading day)
+    length_minutes: 350
+
+    channels: ["open", "high", "low", "close", "volume"]
+    normalization: "log_returns"
+
+    gap_handling: "split"
+    gap_tolerance: 1.5
+
+    # Auto-clamp seq_len to fit within a single trading session (390 min)
+    # At 5m: max=78 bars, clamp=70; prevents 0-sequence output when length_minutes > session
+    auto_clamp: true
+
+# ============================================================================
+# DATA — All 10 available symbols, full depth
+# ============================================================================
+data:
+  data_dir: data/data_labeled_v2/interval=5m
+  symbols: [AAPL, GOOGL, MSFT]
+  interval: 5m
+
+  # ~38k rows per symbol × 3 symbols = ~115k total rows
+  # Memory driver (115k sequences × 70 steps × 5 features × 4 bytes ≈ 160 MB)
+  max_samples_per_symbol: 38000
+  max_rows_per_symbol: 38000
+  max_rows_train: 120000
+  max_cs_samples: 38000
+  min_cs: 3
+
+# ============================================================================
+# INTELLIGENT TRAINING
+# ============================================================================
+intelligent_training:
+  auto_targets: true
+  top_n_targets: 8
+  max_targets_to_evaluate: 20
+
+  # Raw mode — no feature selection
+  auto_features: false
+  top_m_features: 0
+
+  strategy: single_task
+  run_leakage_diagnostics: false
+
+  exclude_target_patterns:
+    - "fwd_ret_20d"
+    - "fwd_ret_15d"
+    - "fwd_ret_10d"
+    - "_raw$"
+    - "^debug_"
+
+  # Lazy loading — one target at a time keeps peak memory bounded
+  lazy_loading:
+    enabled: true
+    verify_memory_release: false
+    log_memory_usage: true
+    fail_on_fallback: false
+
+# ============================================================================
+# TARGET ROUTING — CROSS-SECTIONAL ONLY
+# ============================================================================
+target_routing:
+  max_symbols_for_ss: 0
+  ss_fallback_route: CROSS_SECTIONAL
+
+# ============================================================================
+# TRAINING — SEQUENCE MODELS
+# ============================================================================
+training:
+  model_families:
+    - lstm
+    - transformer
+    - cnn1d
+
+  # Medium capacity — good signal extraction without blowing the memory budget
+  lstm:
+    epochs: 40
+    patience: 7
+    dropout: 0.25
+    recurrent_dropout: 0.15
+    lstm_units: 128
+    learning_rate: 0.001
+    batch_size: 128
+
+  transformer:
+    epochs: 40
+    patience: 7
+    dropout: 0.2
+    d_model: 64
+    heads: 4
+    ff_dim: 128
+    learning_rate: 0.0005
+    batch_size: 128
+
+  cnn1d:
+    epochs: 40
+    patience: 7
+    dropout: 0.25
+    filters: [64, 128]
+    kernel_size: 5
+    learning_rate: 0.001
+    batch_size: 128
+
+# ============================================================================
+# FEATURE SELECTION — SKIPPED (raw sequence mode)
+# ============================================================================
+feature_selection:
+  model_families: []
+
+# ============================================================================
+# SAFETY & LEAKAGE
+# ============================================================================
+safety:
+  leakage_detection:
+    lookback_budget:
+      mode: auto
+      auto_rule: k_times_horizon
+      k: 10.0
+      min_minutes: 240.0
+      max_minutes: 28800.0
+    policy: drop
+    over_budget_action: drop
+
+# ============================================================================
+# MEMORY CAPS — Hard guard-rail at 4 GB
+# ============================================================================
+memory:
+  caps:
+    child_process_gb: 4
+
+# ============================================================================
+# EXECUTION — SINGLE-THREADED (deterministic + memory-safe)
+# ============================================================================
+multi_target:
+  parallel_targets: false
+  skip_on_error: true
+  save_summary: true
+
+multi_model_feature_selection:
+  parallel_symbols: false
+
+threading:
+  parallel:
+    max_workers_process: 1
+    max_workers_thread: 1
+    enabled: false
+
+# ============================================================================
+# DECISIONS — OFF
+# ============================================================================
+decisions:
+  apply_mode: "off"
+  min_level_to_apply: 2
+  use_bayesian: false
+
+# ============================================================================
+# TIMEOUTS
+# ============================================================================
+timeouts:
+  family_timeout_seconds: 1200   # 20 min per family
+  target_timeout_seconds: 3600   # 1 hour per target

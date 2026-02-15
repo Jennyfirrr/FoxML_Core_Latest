@@ -1,0 +1,170 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later OR Commercial
+# Copyright (c) 2025-2026 Fox ML Infrastructure LLC
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foxml"
+version = "0.1.0"
+description = "Research-grade ML infrastructure for cross-sectional and panel data with deterministic strict mode and full fingerprint lineage."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.10,<3.15"
+authors = [
+    { name = "Jennifer Lewis", email = "jenn.lewis5789@gmail.com" },
+]
+keywords = [
+    "machine-learning",
+    "ml-infrastructure",
+    "cross-sectional",
+    "panel-data",
+    "reproducibility",
+    "determinism",
+    "feature-engineering",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Core dependencies — always needed for pipeline, config, tree model training
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "pyarrow",
+    "fastparquet",
+    "h5py",
+    "tables",
+    "pyyaml",
+    "python-dotenv",
+    "requests",
+    "aiohttp",
+    "websockets",
+    "joblib",
+    "tqdm",
+    "colorlog",
+    "statsmodels",
+    "sqlalchemy",
+    "psutil",
+    "python-dateutil",
+    "pytz",
+    "polars",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "torch",
+    "torchvision",
+    "tensorflow",
+    "keras",
+]
+boosting = [
+    "lightgbm",
+    "xgboost",
+]
+ml-extras = [
+    "ngboost",
+    "optuna",
+    "shap",
+    "arch",
+]
+viz = [
+    "matplotlib",
+    "seaborn",
+    "plotly",
+]
+bridge = [
+    "fastapi",
+    "uvicorn",
+]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "mypy",
+]
+all = [
+    "foxml[gpu,boosting,ml-extras,viz,bridge,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/Fox-ML-infrastructure/FoxML_Core"
+Repository = "https://github.com/Fox-ML-infrastructure/FoxML_Core"
+Documentation = "https://github.com/Fox-ML-infrastructure/FoxML_Core/tree/main/DOCS"
+Issues = "https://github.com/Fox-ML-infrastructure/FoxML_Core/issues"
+
+[project.scripts]
+foxml-train = "TRAINING.orchestration.intelligent_trainer:main"
+foxml-trade = "bin.run_live_trading:main"
+
+# ---------------------------------------------------------------------------
+# Setuptools — package discovery
+# ---------------------------------------------------------------------------
+
+[tool.setuptools.packages.find]
+include = [
+    "TRAINING*",
+    "CONFIG*",
+    "LIVE_TRADING*",
+    "DATA_PROCESSING*",
+    "bin*",
+]
+exclude = [
+    "DASHBOARD*",
+    "INTERNAL*",
+    "ARCHIVE*",
+    "DOCS*",
+    "MCP_SERVERS*",
+    "TOOLS*",
+    "tests*",
+    "data*",
+    "state*",
+]
+
+[tool.setuptools.package-data]
+CONFIG = ["**/*.yaml", "**/*.yml"]
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["TRAINING/contract_tests"]
+addopts = "-v --tb=short"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # line too long — handled by formatter
+]
+
+# ---------------------------------------------------------------------------
+# mypy
+# ---------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true

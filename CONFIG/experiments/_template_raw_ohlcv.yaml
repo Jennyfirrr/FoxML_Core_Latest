@@ -1,0 +1,270 @@
+# ============================================================================
+# RAW OHLCV SEQUENCE EXPERIMENT TEMPLATE
+# ============================================================================
+# Template for training sequence models (LSTM, Transformer, CNN1D) on raw
+# Open/High/Low/Close/Volume bars — no computed features.
+#
+# Copy this file and rename it:
+#   cp _template_raw_ohlcv.yaml my_raw_experiment.yaml
+#
+# IMPORTANT: Experiment configs OVERRIDE all other configs (highest priority).
+# You don't need to edit any other files — just this one.
+#
+# WHAT'S DIFFERENT FROM STANDARD MODE:
+#   - input_mode: "raw_sequence" (skips feature computation)
+#   - Stage 1 (Target Ranking) → SKIPPED
+#   - Stage 2 (Feature Selection) → SKIPPED
+#   - Only sequence-compatible families are trained (LSTM, Transformer, CNN1D)
+#   - Input is rolling windows of normalized OHLCV bars
+#
+# Usage:
+#   bin/run_deterministic.sh python TRAINING/orchestration/intelligent_trainer.py \
+#     --experiment-config MY_CONFIG_NAME --output-dir TRAINING/results/my_run
+#
+# ============================================================================
+# MEMORY SIZING GUIDE
+# ============================================================================
+# Peak memory ≈ Python/TF base (~1 GB) + sequence tensor + training overhead
+#
+# Sequence tensor = total_rows × seq_len × 5 × 4 bytes
+#   where total_rows ≈ n_symbols × max_rows_per_symbol
+#
+# Quick estimates (5m interval, 5 OHLCV features, float32):
+#
+#   Symbols  Rows/sym  Seq bars  Sequences    Tensor    Peak RAM
+#   ───────  ────────  ────────  ─────────    ──────    ────────
+#       5     2,000       64      10,000       12 MB    ~1.5 GB
+#      10    10,000       64     100,000      128 MB    ~2.0 GB
+#      10    35,000       96     350,000      672 MB    ~3.5 GB
+#      10    38,000      128     380,000      973 MB    ~4.5 GB
+#      50    38,000       96   1,900,000     3.6 GB    ~8.0 GB
+#     100    38,000      128   3,800,000     9.7 GB   ~16.0 GB
+#
+# KEY KNOBS (in order of impact):
+#   1. n_symbols × max_rows_per_symbol  — total row count (linear)
+#   2. length_minutes / interval        — sequence length in bars (linear)
+#   3. batch_size                       — gradient memory (minor)
+#   4. model capacity (units/d_model)   — weight memory (minor)
+#   5. parallel_targets                 — false keeps one target in RAM at a time
+#
+# RULE OF THUMB: sequence tensor × 5 ≈ peak RAM (accounts for copies,
+#   train/val split, gradients, optimizer states, and Python overhead)
+# ============================================================================
+
+experiment:
+  name: my_raw_experiment       # ← Change this
+  description: "Raw OHLCV sequence experiment"
+
+# ============================================================================
+# PIPELINE — RAW SEQUENCE MODE (required)
+# ============================================================================
+pipeline:
+  # CRITICAL: enables raw OHLCV mode, skips stages 1 & 2
+  input_mode: "raw_sequence"
+
+  sequence:
+    # Sequence length in MINUTES (converted to bars at runtime via interval)
+    # Examples at 5m interval: 320 min = 64 bars, 480 min = 96 bars, 640 min = 128 bars
+    length_minutes: 480         # ← Tune for memory/signal trade-off
+
+    # OHLCV channels — these become the 5 input features
+    channels: ["open", "high", "low", "close", "volume"]
+
+    # Normalization (applied per-sequence):
+    #   "log_returns"  — log(x[t]/x[t-1]) for price, log(vol) for volume  (recommended)
+    #   "returns"      — (x[t]-x[t-1])/x[t-1] for price, raw volume
+    #   "minmax"       — MinMax scaling within each sequence window
+    #   "none"         — no normalization (not recommended)
+    normalization: "log_returns"
+
+    # Gap handling across market close / missing bars:
+    #   "split" — don't span gaps (safe default)
+    #   "fill"  — forward-fill across gaps (risky for long gaps)
+    gap_handling: "split"
+    gap_tolerance: 1.5          # Gap detection: interval × tolerance
+
+    # Auto-clamp seq_len to fit within a single trading session (390 min).
+    # When true and gap_handling="split", reduces seq_len to floor(session_bars * 0.9)
+    # so sequences don't exceed a session. At 5m: max=78 bars, clamp=70.
+    # Set to true if your length_minutes might exceed session length.
+    auto_clamp: false
+
+# ============================================================================
+# DATA
+# ============================================================================
+data:
+  data_dir: data/data_labeled_v2/interval=5m
+
+  # Option 1: Explicit symbol list
+  symbols: [AAPL, AMZN, AVGO, GOOGL, JPM, META, MSFT, NVDA, TSLA, V]
+
+  # Option 2: Auto-discover (uncomment and remove symbols list above)
+  # symbols: []
+
+  interval: 5m
+
+  # Row limits — main memory lever
+  # See sizing table above to pick values for your RAM budget
+  max_samples_per_symbol: 38000   # ← Reduce for less memory
+  max_rows_per_symbol: 38000      # ← Reduce for less memory
+  max_rows_train: 400000
+  max_cs_samples: 38000
+  min_cs: 5
+
+# ============================================================================
+# INTELLIGENT TRAINING
+# ============================================================================
+intelligent_training:
+  auto_targets: true
+  top_n_targets: 8              # ← How many targets to train
+  max_targets_to_evaluate: 20
+
+  # Raw mode — feature selection is skipped
+  auto_features: false
+  top_m_features: 0
+
+  strategy: single_task
+  run_leakage_diagnostics: false
+
+  # Exclude long-horizon / problematic targets
+  exclude_target_patterns:
+    - "fwd_ret_20d"
+    - "fwd_ret_15d"
+    - "fwd_ret_10d"
+    - "_raw$"
+    - "^debug_"
+
+  # Lazy loading — loads one target at a time (keeps peak memory bounded)
+  lazy_loading:
+    enabled: true               # ← STRONGLY recommended for memory control
+    verify_memory_release: false
+    log_memory_usage: true
+    fail_on_fallback: false
+
+# ============================================================================
+# TARGET ROUTING
+# ============================================================================
+target_routing:
+  max_symbols_for_ss: 0        # Force cross-sectional only
+  ss_fallback_route: CROSS_SECTIONAL
+
+# ============================================================================
+# TRAINING — SEQUENCE MODEL FAMILIES
+# ============================================================================
+# Only sequence-compatible families. Non-sequence families are auto-filtered.
+# Uncomment/remove families as needed.
+training:
+  model_families:
+    - lstm
+    - transformer
+    - cnn1d
+
+  # ── LSTM ──────────────────────────────────────────────────────────────────
+  # Memory: O(batch_size × seq_len × lstm_units)
+  lstm:
+    epochs: 40
+    patience: 7
+    dropout: 0.25
+    recurrent_dropout: 0.15
+    lstm_units: 128             # 64=small, 128=medium, 256=large
+    learning_rate: 0.001
+    batch_size: 128             # ← Halve to reduce gradient memory
+
+  # ── Transformer ───────────────────────────────────────────────────────────
+  # Memory: O(batch_size × heads × seq_len²)  ← quadratic in seq_len!
+  # Long sequences (>200 bars) may need smaller d_model or fewer heads.
+  transformer:
+    epochs: 40
+    patience: 7
+    dropout: 0.2
+    d_model: 64                 # 32=small, 64=medium, 128=large
+    heads: 4                    # Must divide d_model evenly
+    ff_dim: 128                 # Typically 2× d_model
+    learning_rate: 0.0005
+    batch_size: 128
+
+  # ── CNN1D ─────────────────────────────────────────────────────────────────
+  # Memory: O(batch_size × seq_len × max(filters))
+  cnn1d:
+    epochs: 40
+    patience: 7
+    dropout: 0.25
+    filters: [64, 128]         # [32,64]=small, [64,128]=medium, [128,256]=large
+    kernel_size: 5
+    learning_rate: 0.001
+    batch_size: 128
+
+# ============================================================================
+# FEATURE SELECTION — SKIPPED (raw sequence mode)
+# ============================================================================
+feature_selection:
+  model_families: []
+
+# ============================================================================
+# SAFETY & LEAKAGE
+# ============================================================================
+safety:
+  leakage_detection:
+    lookback_budget:
+      mode: auto
+      auto_rule: k_times_horizon
+      k: 10.0
+      min_minutes: 240.0
+      max_minutes: 28800.0
+    policy: drop
+    over_budget_action: drop
+
+# ============================================================================
+# MEMORY CAPS (optional hard guard-rail)
+# ============================================================================
+# Uncomment to set a hard RSS limit (in GB). The pipeline will abort if exceeded.
+# memory:
+#   caps:
+#     child_process_gb: 4
+
+# ============================================================================
+# EXECUTION
+# ============================================================================
+# Single-threaded = deterministic + memory-safe (one target at a time).
+# Enable parallelism only if you have headroom (multiplies peak by ~n_workers).
+multi_target:
+  parallel_targets: false       # ← true needs ~2× memory per extra worker
+  skip_on_error: true
+  save_summary: true
+
+multi_model_feature_selection:
+  parallel_symbols: false
+
+threading:
+  parallel:
+    max_workers_process: 1
+    max_workers_thread: 1
+    enabled: false
+
+# ============================================================================
+# DECISIONS
+# ============================================================================
+decisions:
+  apply_mode: "off"
+  min_level_to_apply: 2
+  use_bayesian: false
+
+# ============================================================================
+# TIMEOUTS (safety net)
+# ============================================================================
+# timeouts:
+#   family_timeout_seconds: 1200  # 20 min per family
+#   target_timeout_seconds: 3600  # 1 hour per target
+
+# ============================================================================
+# VERIFICATION CHECKLIST (after running)
+# ============================================================================
+# 1. Stage 1 (Target Ranking) → "SKIPPED - Raw Sequence Mode"
+# 2. Stage 2 (Feature Selection) → "SKIPPED - Raw Sequence Mode"
+# 3. Only LSTM/Transformer/CNN1D models trained
+# 4. model_meta.json contains:
+#      input_mode: "raw_sequence"
+#      sequence_length: <bars>
+#      sequence_channels: ["open", "high", "low", "close", "volume"]
+#      sequence_normalization: "log_returns"
+# 5. Peak RSS stayed within your target budget (check log output)

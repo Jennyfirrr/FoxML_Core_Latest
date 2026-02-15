@@ -972,6 +972,7 @@ def prepare_training_data_raw_sequence(
     seq_len_minutes = seq_config.get("length_minutes", 320)
     normalization = seq_config.get("normalization", "returns")
     gap_tolerance = seq_config.get("gap_tolerance", 1.5)
+    auto_clamp = seq_config.get("auto_clamp", False)
 
     logger.info(
         f"Preparing raw OHLCV sequences for target={target}: "
@@ -1015,6 +1016,7 @@ def prepare_training_data_raw_sequence(
                 symbol=symbol,
                 handle_gaps=True,
                 gap_tolerance=gap_tolerance,
+                auto_clamp=auto_clamp,
             )
 
             if len(X_seq) == 0:

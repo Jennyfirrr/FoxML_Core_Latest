@@ -1,0 +1,856 @@
+site_name: "FoxML Core Documentation"
+site_description: "Research-grade ML infrastructure for cross-sectional and panel data"
+docs_dir: "_book_src"
+site_dir: "book/site"
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - toc.follow
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+# The _book_src directory contains only .md symlinks (created by bin/build-book.sh),
+# so minimal exclusions are needed here.
+
+# Pages not explicitly listed in nav are still built and searchable,
+# just not shown in the sidebar.
+not_in_nav: |
+  DOCS/00_executive/audits/*
+  DOCS/00_executive/product/*
+  DOCS/02_reference/target_ranking/*
+  DOCS/02_reference/testing/*
+  INTERNAL/docs/CHANGELOG_TEMPLATE.md
+  INTERNAL/docs/DOCS_INTERNAL_README.md
+  INTERNAL/docs/vocabulary.md
+  .claude/*
+  .github/*
+  deploy/*
+  MCP_SERVERS/*
+  SCRIPTS/*
+
+nav:
+  # ── Part 1: Home ──────────────────────────────────────────────
+  - Home:
+    - README.md
+
+  # ── Part 2: Executive Overview ────────────────────────────────
+  - Executive Overview:
+    - DOCS/00_executive/README.md
+    - Quick Start: DOCS/00_executive/QUICKSTART.md
+    - Getting Started: DOCS/00_executive/GETTING_STARTED.md
+    - Architecture Overview: DOCS/00_executive/ARCHITECTURE_OVERVIEW.md
+    - Deterministic Training: DOCS/00_executive/DETERMINISTIC_TRAINING.md
+    - System Requirements: DOCS/00_executive/SYSTEM_REQUIREMENTS.md
+
+  # ── Part 3: Tutorials ────────────────────────────────────────
+  - Tutorials:
+    - DOCS/01_tutorials/README.md
+    - Setup:
+      - DOCS/01_tutorials/setup/README.md
+      - Installation: DOCS/01_tutorials/setup/INSTALLATION.md
+      - Environment Setup: DOCS/01_tutorials/setup/ENVIRONMENT_SETUP.md
+      - GPU Setup: DOCS/01_tutorials/setup/GPU_SETUP.md
+    - Pipelines:
+      - DOCS/01_tutorials/pipelines/README.md
+      - First Pipeline Run: DOCS/01_tutorials/pipelines/FIRST_PIPELINE_RUN.md
+      - Custom Datasets: DOCS/01_tutorials/pipelines/CUSTOM_DATASETS.md
+      - Custom Features: DOCS/01_tutorials/pipelines/CUSTOM_FEATURES.md
+      - Data Loader Plugins: DOCS/01_tutorials/pipelines/DATA_LOADER_PLUGINS.md
+      - Data Processing README: DOCS/01_tutorials/pipelines/DATA_PROCESSING_README.md
+      - Data Processing Walkthrough: DOCS/01_tutorials/pipelines/DATA_PROCESSING_WALKTHROUGH.md
+      - Feature Engineering Tutorial: DOCS/01_tutorials/pipelines/FEATURE_ENGINEERING_TUTORIAL.md
+    - Training:
+      - DOCS/01_tutorials/training/README.md
+      - Intelligent Training: DOCS/01_tutorials/training/INTELLIGENT_TRAINING_TUTORIAL.md
+      - Model Training Guide: DOCS/01_tutorials/training/MODEL_TRAINING_GUIDE.md
+      - Auto Target Ranking: DOCS/01_tutorials/training/AUTO_TARGET_RANKING.md
+      - Feature Selection: DOCS/01_tutorials/training/FEATURE_SELECTION_TUTORIAL.md
+      - Walkforward Validation: DOCS/01_tutorials/training/WALKFORWARD_VALIDATION.md
+      - Experiments Operations: DOCS/01_tutorials/training/EXPERIMENTS_OPERATIONS.md
+      - Ranking Selection Consistency: DOCS/01_tutorials/training/RANKING_SELECTION_CONSISTENCY.md
+      - Phase 1 Feature Engineering: DOCS/01_tutorials/training/PHASE1_FEATURE_ENGINEERING.md
+      - Training README: DOCS/01_tutorials/training/TRAINING_README.md
+      - E2E Test Command: DOCS/01_tutorials/training/E2E_TEST_COMMAND.md
+      - Testing Quick Reference: DOCS/01_tutorials/training/TESTING_QUICK_REFERENCE.md
+    - Configuration:
+      - DOCS/01_tutorials/configuration/README.md
+      - Config Basics: DOCS/01_tutorials/configuration/CONFIG_BASICS.md
+      - Advanced Config: DOCS/01_tutorials/configuration/ADVANCED_CONFIG.md
+      - Config Examples: DOCS/01_tutorials/configuration/CONFIG_EXAMPLES.md
+      - Experiment Config Guide: DOCS/01_tutorials/configuration/EXPERIMENT_CONFIG_GUIDE.md
+    - Simple Pipeline Usage: DOCS/01_tutorials/SIMPLE_PIPELINE_USAGE.md
+    - Refactoring and Wrappers: DOCS/01_tutorials/REFACTORING_AND_WRAPPERS.md
+
+  # ── Part 4: Reference ────────────────────────────────────────
+  - Reference:
+    - DOCS/02_reference/README.md
+    - API:
+      - DOCS/02_reference/api/README.md
+      - CLI Reference: DOCS/02_reference/api/CLI_REFERENCE.md
+      - Config Schema: DOCS/02_reference/api/CONFIG_SCHEMA.md
+      - Data Processing API: DOCS/02_reference/api/DATA_PROCESSING_API.md
+      - Intelligent Trainer API: DOCS/02_reference/api/INTELLIGENT_TRAINER_API.md
+      - Module Reference: DOCS/02_reference/api/MODULE_REFERENCE.md
+    - Configuration:
+      - DOCS/02_reference/configuration/README.md
+      - Config Loader API: DOCS/02_reference/configuration/CONFIG_LOADER_API.md
+      - Config Cleaner API: DOCS/02_reference/configuration/CONFIG_CLEANER_API.md
+      - Config Overlays: DOCS/02_reference/configuration/CONFIG_OVERLAYS.md
+      - Config README: DOCS/02_reference/configuration/CONFIG_README.md
+      - Config Defaults: DOCS/02_reference/configuration/CONFIG_README_DEFAULTS.md
+      - Deterministic Runs: DOCS/02_reference/configuration/DETERMINISTIC_RUNS.md
+      - Environment Variables: DOCS/02_reference/configuration/ENVIRONMENT_VARIABLES.md
+      - Feature Target Configs: DOCS/02_reference/configuration/FEATURE_TARGET_CONFIGS.md
+      - Interval Metric Scaling: DOCS/02_reference/configuration/INTERVAL_METRIC_SCALING.md
+      - Model Configuration: DOCS/02_reference/configuration/MODEL_CONFIGURATION.md
+      - Modular Config System: DOCS/02_reference/configuration/MODULAR_CONFIG_SYSTEM.md
+      - Run Identity: DOCS/02_reference/configuration/RUN_IDENTITY.md
+      - Safety Leakage Configs: DOCS/02_reference/configuration/SAFETY_LEAKAGE_CONFIGS.md
+      - Training Pipeline Configs: DOCS/02_reference/configuration/TRAINING_PIPELINE_CONFIGS.md
+      - Usage Examples: DOCS/02_reference/configuration/USAGE_EXAMPLES.md
+      - Migration:
+        - DOCS/02_reference/configuration/migration/README.md
+        - Migration Guide: DOCS/02_reference/configuration/migration/MIGRATION_GUIDE.md
+        - Broken Paths Check: DOCS/02_reference/configuration/migration/BROKEN_PATHS_CHECK.md
+        - Cleanup Plan: DOCS/02_reference/configuration/migration/CLEANUP_PLAN.md
+        - Config Trace Fix: DOCS/02_reference/configuration/migration/CONFIG_TRACE_FIX.md
+        - Path Consolidation: DOCS/02_reference/configuration/migration/PATH_CONSOLIDATION.md
+        - Unused Config Files: DOCS/02_reference/configuration/migration/UNUSED_CONFIG_FILES.md
+    - Data:
+      - DOCS/02_reference/data/README.md
+      - Column Reference: DOCS/02_reference/data/COLUMN_REFERENCE.md
+      - Data Format Spec: DOCS/02_reference/data/DATA_FORMAT_SPEC.md
+      - Data Sanity Rules: DOCS/02_reference/data/DATA_SANITY_RULES.md
+    - Models:
+      - DOCS/02_reference/models/README.md
+      - Model Catalog: DOCS/02_reference/models/MODEL_CATALOG.md
+      - Model Config Reference: DOCS/02_reference/models/MODEL_CONFIG_REFERENCE.md
+      - Training Parameters: DOCS/02_reference/models/TRAINING_PARAMETERS.md
+    - Systems:
+      - DOCS/02_reference/systems/README.md
+      - Pipeline Reference: DOCS/02_reference/systems/PIPELINE_REFERENCE.md
+    - Trading:
+      - DOCS/02_reference/trading/README.md
+      - Alpaca Configuration: DOCS/02_reference/trading/ALPACA_CONFIGURATION.md
+      - Alpaca Scripts: DOCS/02_reference/trading/ALPACA_SCRIPTS.md
+      - IBKR Configuration: DOCS/02_reference/trading/IBKR_CONFIGURATION.md
+      - IBKR Scripts: DOCS/02_reference/trading/IBKR_SCRIPTS.md
+      - Trading Modules: DOCS/02_reference/trading/TRADING_MODULES.md
+    - Training Routing:
+      - DOCS/02_reference/training_routing/README.md
+      - Index: DOCS/02_reference/training_routing/INDEX.md
+      - Quick Start: DOCS/02_reference/training_routing/QUICK_START.md
+      - End to End Flow: DOCS/02_reference/training_routing/END_TO_END_FLOW.md
+      - One Command Training: DOCS/02_reference/training_routing/ONE_COMMAND_TRAINING.md
+      - Two Stage Training: DOCS/02_reference/training_routing/TWO_STAGE_TRAINING.md
+      - Ready to Use: DOCS/02_reference/training_routing/READY_TO_USE.md
+      - Setup Complete: DOCS/02_reference/training_routing/SETUP_COMPLETE.md
+      - Summary: DOCS/02_reference/training_routing/SUMMARY.md
+    - Roadmap:
+      - DOCS/02_reference/roadmap/README.md
+      - Roadmap: DOCS/02_reference/roadmap/ROADMAP.md
+      - "2025-12-12": DOCS/02_reference/roadmap/2025-12-12.md
+    - Known Issues: DOCS/02_reference/KNOWN_ISSUES.md
+    - Detailed Changelog: DOCS/02_reference/CHANGELOG_DETAILED.md
+
+  # ── Part 5: Technical Deep Dives ─────────────────────────────
+  - Technical:
+    - DOCS/03_technical/README.md
+    - Research:
+      - DOCS/03_technical/research/README.md
+      - Feature Importance Methodology: DOCS/03_technical/research/FEATURE_IMPORTANCE_METHODOLOGY.md
+      - Intelligence Layer: DOCS/03_technical/research/INTELLIGENCE_LAYER.md
+      - Target Discovery: DOCS/03_technical/research/TARGET_DISCOVERY.md
+      - Validation Methodology: DOCS/03_technical/research/VALIDATION_METHODOLOGY.md
+    - Implementation:
+      - DOCS/03_technical/implementation/README.md
+      - Active Sanitization: DOCS/03_technical/implementation/ACTIVE_SANITIZATION.md
+      - Cohort Aware Reproducibility: DOCS/03_technical/implementation/COHORT_AWARE_REPRODUCIBILITY.md
+      - Cross Sectional Mode: DOCS/03_technical/implementation/CROSS_SECTIONAL_MODE_ENFORCEMENT.md
+      - Data Loading Order: DOCS/03_technical/implementation/DATA_LOADING_PREPROCESSING_EXECUTION_ORDER.md
+      - Dual View Reproducibility: DOCS/03_technical/implementation/DUAL_VIEW_REPRODUCIBILITY.md
+      - Dual View Target Ranking: DOCS/03_technical/implementation/DUAL_VIEW_TARGET_RANKING.md
+      - Feature Filtering Order: DOCS/03_technical/implementation/FEATURE_FILTERING_EXECUTION_ORDER.md
+      - Feature Importance Stability: DOCS/03_technical/implementation/FEATURE_IMPORTANCE_STABILITY.md
+      - Feature Pruning Order: DOCS/03_technical/implementation/FEATURE_PRUNING_EXECUTION_ORDER.md
+      - Feature Selection Order: DOCS/03_technical/implementation/FEATURE_SELECTION_EXECUTION_ORDER.md
+      - Feature Selection Guide: DOCS/03_technical/implementation/FEATURE_SELECTION_GUIDE.md
+      - Feature Selection Snapshots: DOCS/03_technical/implementation/FEATURE_SELECTION_SNAPSHOTS.md
+      - Parallel Execution: DOCS/03_technical/implementation/PARALLEL_EXECUTION.md
+      - Performance Optimization: DOCS/03_technical/implementation/PERFORMANCE_OPTIMIZATION.md
+      - Pressure Test Plan: DOCS/03_technical/implementation/PRESSURE_TEST_PLAN.md
+      - Reproducibility API: DOCS/03_technical/implementation/REPRODUCIBILITY_API.md
+      - Reproducibility Error Handling: DOCS/03_technical/implementation/REPRODUCIBILITY_ERROR_HANDLING.md
+      - Reproducibility Improvements: DOCS/03_technical/implementation/REPRODUCIBILITY_IMPROVEMENTS.md
+      - Reproducibility Self Test: DOCS/03_technical/implementation/REPRODUCIBILITY_SELF_TEST.md
+      - Reproducibility Structure: DOCS/03_technical/implementation/REPRODUCIBILITY_STRUCTURE.md
+      - Reproducibility Tracking: DOCS/03_technical/implementation/REPRODUCIBILITY_TRACKING.md
+      - Results Organization: DOCS/03_technical/implementation/RESULTS_ORGANIZATION_OPTIONS.md
+      - Strategy Updates: DOCS/03_technical/implementation/STRATEGY_UPDATES.md
+      - Training Optimization Guide: DOCS/03_technical/implementation/TRAINING_OPTIMIZATION_GUIDE.md
+      - Unified Lookback Cap: DOCS/03_technical/implementation/UNIFIED_LOOKBACK_CAP_STRUCTURE.md
+      - Decisioning:
+        - Bayesian Policy: DOCS/03_technical/implementation/decisioning/BAYESIAN_POLICY.md
+        - Decision Engine: DOCS/03_technical/implementation/decisioning/DECISION_ENGINE.md
+        - Verification Checklist: DOCS/03_technical/implementation/decisioning/VERIFICATION_CHECKLIST.md
+      - Training Utils:
+        - Duration Parsing: DOCS/03_technical/implementation/training_utils/DURATION_PARSING_GUIDE.md
+        - Duration Schema: DOCS/03_technical/implementation/training_utils/DURATION_SCHEMA_GUIDE.md
+        - Duration System: DOCS/03_technical/implementation/training_utils/DURATION_SYSTEM_FINAL.md
+        - Feature Selection Lookback: DOCS/03_technical/implementation/training_utils/FEATURE_SELECTION_LOOKBACK_CAP_INTEGRATION.md
+        - Shell Readline Issue: DOCS/03_technical/implementation/training_utils/SHELL_READLINE_ISSUE.md
+    - Design:
+      - DOCS/03_technical/design/README.md
+      - Architecture Deep Dive: DOCS/03_technical/design/ARCHITECTURE_DEEP_DIVE.md
+      - CLI Config Separation: DOCS/03_technical/design/CLI_CONFIG_SEPARATION.md
+      - CLI Migration Status: DOCS/03_technical/design/CLI_MIGRATION_STATUS.md
+      - Contracts: DOCS/03_technical/design/contracts.md
+    - Trading:
+      - DOCS/03_technical/trading/README.md
+      - Architecture:
+        - Mathematical Foundations: DOCS/03_technical/trading/architecture/MATHEMATICAL_FOUNDATIONS.md
+        - Optimization Architecture: DOCS/03_technical/trading/architecture/OPTIMIZATION_ARCHITECTURE.md
+      - Implementation:
+        - Live Trading Integration: DOCS/03_technical/trading/implementation/LIVE_TRADING_INTEGRATION.md
+        - "C++ Integration": DOCS/03_technical/trading/implementation/C++_INTEGRATION_SUMMARY.md
+        - CPP Engine: DOCS/03_technical/trading/implementation/CPP_ENGINE_README.md
+        - Rebalancing Plan: DOCS/03_technical/trading/implementation/ENHANCED_REBALANCING_TRADING_PLAN.md
+        - Pressure Test Roadmap: DOCS/03_technical/trading/implementation/PRESSURE_TEST_IMPLEMENTATION_ROADMAP.md
+        - Pressure Test Upgrades: DOCS/03_technical/trading/implementation/PRESSURE_TEST_UPGRADES.md
+        - Deprecation Notice: DOCS/03_technical/trading/implementation/DEPRECATION_NOTICE.md
+        - Deprecated README: DOCS/03_technical/trading/implementation/DEPRECATED_README.md
+      - Operations:
+        - Getting Started: DOCS/03_technical/trading/operations/GETTING_STARTED.md
+        - Operations Guide: DOCS/03_technical/trading/operations/OPERATIONS_GUIDE.md
+        - Performance Optimization: DOCS/03_technical/trading/operations/PERFORMANCE_OPTIMIZATION_PLAN.md
+        - Quick Reference: DOCS/03_technical/trading/operations/QUICK_REFERENCE.md
+        - Systemd Deployment: DOCS/03_technical/trading/operations/SYSTEMD_DEPLOYMENT_PLAN.md
+        - Yahoo Finance: DOCS/03_technical/trading/operations/YAHOO_FINANCE_INTEGRATION.md
+      - Testing:
+        - Daily Testing: DOCS/03_technical/trading/testing/DAILY_TESTING_README.md
+        - Testing Plan: DOCS/03_technical/trading/testing/TESTING_PLAN.md
+        - Testing Summary: DOCS/03_technical/trading/testing/TESTING_SUMMARY.md
+    - Testing:
+      - DOCS/03_technical/testing/README.md
+      - Daily Testing: DOCS/03_technical/testing/DAILY_TESTING.md
+      - Leakage Canary Guide: DOCS/03_technical/testing/LEAKAGE_CANARY_TEST_GUIDE.md
+      - Testing Plan: DOCS/03_technical/testing/TESTING_PLAN.md
+      - Testing Summary: DOCS/03_technical/testing/TESTING_SUMMARY.md
+    - Operations:
+      - DOCS/03_technical/operations/README.md
+      - Avoid Long Runs: DOCS/03_technical/operations/AVOID_LONG_RUNS.md
+      - Journald Logging: DOCS/03_technical/operations/JOURNALD_LOGGING.md
+      - Restore from Logs: DOCS/03_technical/operations/RESTORE_FROM_LOGS.md
+      - Systemd Deployment: DOCS/03_technical/operations/SYSTEMD_DEPLOYMENT.md
+    - Benchmarks:
+      - DOCS/03_technical/benchmarks/README.md
+      - Dataset Sizing: DOCS/03_technical/benchmarks/DATASET_SIZING.md
+      - Model Comparisons: DOCS/03_technical/benchmarks/MODEL_COMPARISONS.md
+      - Performance Metrics: DOCS/03_technical/benchmarks/PERFORMANCE_METRICS.md
+    - Architecture:
+      - Leakage Controls: DOCS/03_technical/architecture/LEAKAGE_CONTROLS_EVALUATION.md
+    - Debugging:
+      - Model Family Status: DOCS/03_technical/debugging/MODEL_FAMILY_STATUS_TRACKING.md
+    - Fixes:
+      - DOCS/03_technical/fixes/README.md
+      - Known Issues: DOCS/03_technical/fixes/KNOWN_ISSUES.md
+      - Migration Notes: DOCS/03_technical/fixes/MIGRATION_NOTES.md
+      - "2025-12-13 Critical": DOCS/03_technical/fixes/2025-12-13-critical-fixes.md
+      - "2025-12-13 Feature Selection": DOCS/03_technical/fixes/2025-12-13-feature-selection-fixes.md
+      - "2025-12-13 Fingerprint": DOCS/03_technical/fixes/2025-12-13-fingerprint-improvements.md
+      - "2025-12-13 Gatekeeper": DOCS/03_technical/fixes/2025-12-13-gatekeeper-feature-dropping-fix.md
+      - "2025-12-13 Verification": DOCS/03_technical/fixes/2025-12-13-implementation-verification.md
+      - "2025-12-13 Leakage": DOCS/03_technical/fixes/2025-12-13-leakage-validation-fix.md
+      - "2025-12-13 Lookback": DOCS/03_technical/fixes/2025-12-13-lookback-fingerprint-tracking.md
+      - "2025-12-13 Dataclass": DOCS/03_technical/fixes/2025-12-13-lookback-result-dataclass-migration.md
+      - "2025-12-13 Sharp Edges": DOCS/03_technical/fixes/2025-12-13-sharp-edges-verification.md
+      - "2025-12-13 SST Fix": DOCS/03_technical/fixes/2025-12-13-single-source-of-truth-fix.md
+      - "2025-12-13 SST Design": DOCS/03_technical/fixes/2025-12-13-sst-enforcement-design.md
+      - "2025-12-13 Stability": DOCS/03_technical/fixes/2025-12-13-stability-and-dtype-fixes.md
+      - "2025-12-13 Telemetry Audit": DOCS/03_technical/fixes/2025-12-13-telemetry-scoping-audit.md
+      - "2025-12-13 Telemetry Fix": DOCS/03_technical/fixes/2025-12-13-telemetry-scoping-fix.md
+    - Refactoring:
+      - DOCS/03_technical/refactoring/README.md
+      - Specialized Models: DOCS/03_technical/refactoring/SPECIALIZED_MODELS.md
+      - Target Predictability: DOCS/03_technical/refactoring/TARGET_PREDICTABILITY_RANKING.md
+      - Training Strategies: DOCS/03_technical/refactoring/TRAINING_STRATEGIES.md
+    - Roadmaps:
+      - DOCS/03_technical/roadmaps/README.md
+      - Alpha Enhancement: DOCS/03_technical/roadmaps/ALPHA_ENHANCEMENT_ROADMAP.md
+      - Future Work: DOCS/03_technical/roadmaps/FUTURE_WORK.md
+    - Setup:
+      - XGBoost GPU Build: DOCS/03_technical/setup/XGBOOST_GPU_BUILD.md
+    - Telemetry:
+      - Comparability Requirements: DOCS/03_technical/telemetry/COMPARABILITY_REQUIREMENTS.md
+      - Diff Telemetry: DOCS/03_technical/telemetry/DIFF_TELEMETRY.md
+      - Final 5 Percent Fixes: DOCS/03_technical/telemetry/FINAL_5_PERCENT_FIXES.md
+      - Production Readiness: DOCS/03_technical/telemetry/PRODUCTION_READINESS.md
+      - Robustness Fixes: DOCS/03_technical/telemetry/ROBUSTNESS_FIXES_SUMMARY.md
+      - SST Consistency: DOCS/03_technical/telemetry/SST_CONSISTENCY_ASSESSMENT.md
+
+  # ── Part 6: DOCS Supplementary ───────────────────────────────
+  - Documentation Index:
+    - Architecture: DOCS/ARCHITECTURE.md
+    - Cross References: DOCS/CROSS_REFERENCES.md
+    - Index: DOCS/INDEX.md
+    - Legacy:
+      - DOCS/LEGACY/README.md
+      - Experiments Implementation: DOCS/LEGACY/EXPERIMENTS_IMPLEMENTATION.md
+      - Experiments Quick Start: DOCS/LEGACY/EXPERIMENTS_QUICK_START.md
+      - Experiments Workflow: DOCS/LEGACY/EXPERIMENTS_WORKFLOW.md
+      - Status Debugging: DOCS/LEGACY/STATUS_DEBUGGING.md
+
+  # ── Part 7: Module Documentation ─────────────────────────────
+  - Modules:
+    - CONFIG:
+      - CONFIG/README.md
+      - Changelog: CONFIG/CHANGELOG.md
+      - SST Verification: CONFIG/CONFIG_SST_VERIFICATION.md
+      - Archive: CONFIG/archive/README.md
+      - Core: CONFIG/core/README.md
+      - Data: CONFIG/data/README.md
+      - Experiments:
+        - CONFIG/experiments/README.md
+        - Quick Reference: CONFIG/experiments/QUICK_REFERENCE.md
+      - Feature Selection: CONFIG/feature_selection/README.md
+      - Models: CONFIG/models/README.md
+      - Pipeline:
+        - CONFIG/pipeline/README.md
+        - Training: CONFIG/pipeline/training/README.md
+      - Ranking:
+        - CONFIG/ranking/README.md
+        - Features: CONFIG/ranking/features/README.md
+        - Targets: CONFIG/ranking/targets/README.md
+    - TRAINING:
+      - Decisioning: TRAINING/decisioning/README.md
+      - Specialized Models: TRAINING/models/specialized/README.md
+      - Predictability: TRAINING/ranking/predictability/README.md
+      - Stability: TRAINING/stability/README.md
+      - Training Strategies: TRAINING/training_strategies/README.md
+    - LIVE_TRADING:
+      - LIVE_TRADING/README.md
+      - Implementation Progress: LIVE_TRADING/IMPLEMENTATION_PROGRESS.md
+      - Documentation:
+        - LIVE_TRADING/DOCS/README.md
+        - Architecture:
+          - System Architecture: LIVE_TRADING/DOCS/architecture/SYSTEM_ARCHITECTURE.md
+          - Pipeline Stages: LIVE_TRADING/DOCS/architecture/PIPELINE_STAGES.md
+          - Mathematical Formulas: LIVE_TRADING/DOCS/architecture/MATHEMATICAL_FORMULAS.md
+        - Components:
+          - Model Inference: LIVE_TRADING/DOCS/components/MODEL_INFERENCE.md
+          - Multi-Horizon and Interval: LIVE_TRADING/DOCS/components/MULTI_HORIZON_AND_INTERVAL.md
+          - Online Learning: LIVE_TRADING/DOCS/components/ONLINE_LEARNING.md
+          - Risk Management: LIVE_TRADING/DOCS/components/RISK_MANAGEMENT.md
+        - Reference:
+          - Configuration Reference: LIVE_TRADING/DOCS/reference/CONFIGURATION_REFERENCE.md
+          - Plan References: LIVE_TRADING/DOCS/reference/PLAN_REFERENCES.md
+      - Implementation Plans:
+        - Master Plan: LIVE_TRADING/plans/MASTER.md
+        - Review Amendments: LIVE_TRADING/plans/00_REVIEW_AMENDMENTS.md
+        - Common Infrastructure: LIVE_TRADING/plans/01_common_infrastructure.md
+        - Broker Layer: LIVE_TRADING/plans/02_broker_layer.md
+        - Model Integration: LIVE_TRADING/plans/03_model_integration.md
+        - Prediction Pipeline: LIVE_TRADING/plans/04_prediction_pipeline.md
+        - Blending: LIVE_TRADING/plans/05_blending.md
+        - Arbitration: LIVE_TRADING/plans/06_arbitration.md
+        - Gating: LIVE_TRADING/plans/07_gating.md
+        - Sizing: LIVE_TRADING/plans/08_sizing.md
+        - Risk: LIVE_TRADING/plans/09_risk.md
+        - Clock Abstraction: LIVE_TRADING/plans/0A_clock_abstraction.md
+        - Order Lifecycle: LIVE_TRADING/plans/0B_order_lifecycle.md
+        - Position Reconciliation: LIVE_TRADING/plans/0C_position_reconciliation.md
+        - State Persistence: LIVE_TRADING/plans/0D_state_persistence.md
+        - Timezone Standardization: LIVE_TRADING/plans/0E_timezone_standardization.md
+        - Engine: LIVE_TRADING/plans/10_engine.md
+        - Config and CLI: LIVE_TRADING/plans/11_config_and_cli.md
+        - Alpaca Broker: LIVE_TRADING/plans/12_alpaca_broker.md
+        - IBKR Broker: LIVE_TRADING/plans/13_ibkr_broker.md
+        - Live Data Providers: LIVE_TRADING/plans/14_live_data_providers.md
+        - Backtesting: LIVE_TRADING/plans/15_backtesting.md
+        - Observability: LIVE_TRADING/plans/16_observability.md
+        - Alerting: LIVE_TRADING/plans/17_alerting.md
+        - Rust Core: LIVE_TRADING/plans/18_rust_core.md
+        - CILS Online Learning: LIVE_TRADING/plans/19_cils_online_learning.md
+        - Code Review Issues: LIVE_TRADING/plans/CODE_REVIEW_ISSUES.md
+        - Phase 4 Master: LIVE_TRADING/plans/PHASE4_MASTER.md
+    - DASHBOARD:
+      - DASHBOARD/README.md
+      - Features: DASHBOARD/FEATURES.md
+      - Implementation Status: DASHBOARD/IMPLEMENTATION_STATUS.md
+      - Overview: DASHBOARD/OVERVIEW.md
+      - Service Management: DASHBOARD/SERVICE_MANAGEMENT.md
+      - UI Mockup: DASHBOARD/UI_MOCKUP.md
+    - DATA_PROCESSING:
+      - DATA_PROCESSING/README.md
+
+  # ── Part 8: Developer Guide ──────────────────────────────────
+  - Developer Guide:
+    - Project Instructions: CLAUDE.md
+    - Integration Contracts: INTEGRATION_CONTRACTS.md
+    - Code Review Summary: CODE_REVIEW_SUMMARY.md
+    - Skills:
+      - Architecture Overview: claude-skills/architecture-overview.md
+      - SST and Coding Standards: claude-skills/sst-and-coding-standards.md
+      - Determinism and Reproducibility: claude-skills/determinism-and-reproducibility.md
+      - Configuration Management: claude-skills/configuration-management.md
+      - Testing Guide: claude-skills/testing-guide.md
+      - Debugging Pipelines: claude-skills/debugging-pipelines.md
+      - Maintenance Tasks: claude-skills/maintenance-tasks.md
+      - Adding New Models: claude-skills/adding-new-models.md
+      - Feature Engineering: claude-skills/feature-engineering.md
+      - Data Loading Pipeline: claude-skills/data-loading-pipeline.md
+      - Decomposition Verification: claude-skills/decomposition-verification.md
+      - Integration Contracts: claude-skills/integration-contracts.md
+      - Skill Maintenance: claude-skills/skill-maintenance.md
+      - Changelog Maintenance: claude-skills/changelog-maintenance.md
+      - Execution Engine: claude-skills/execution-engine.md
+      - Broker Integration: claude-skills/broker-integration.md
+      - Model Inference: claude-skills/model-inference.md
+      - Signal Generation: claude-skills/signal-generation.md
+      - Risk Management: claude-skills/risk-management.md
+      - Dashboard Overview: claude-skills/dashboard-overview.md
+      - Dashboard Development: claude-skills/dashboard-development.md
+      - Dashboard IPC Bridge: claude-skills/dashboard-ipc-bridge.md
+      - Dashboard Event Integration: claude-skills/dashboard-event-integration.md
+
+  # ── Part 9: Internal Reference ───────────────────────────────
+  - Internal Reference:
+    - INTERNAL/docs/README.md
+    - Index: INTERNAL/docs/INDEX.md
+    - Handbook: INTERNAL/docs/INTERNAL_HANDBOOK.md
+    - Vocabulary: INTERNAL/docs/VOCABULARY.md
+    - Analysis:
+      - INTERNAL/docs/analysis/README.md
+      - "C++ Integration": INTERNAL/docs/analysis/C++_INTEGRATION.md
+      - Data Overlap: INTERNAL/docs/analysis/DATA_OVERLAP_ANALYSIS.md
+      - Deep Pass: INTERNAL/docs/analysis/DEEP_PASS_ANALYSIS.md
+      - Determinism: INTERNAL/docs/analysis/DETERMINISM_ANALYSIS.md
+      - HPC Optimization: INTERNAL/docs/analysis/HPC_OPTIMIZATION_STATUS.md
+      - Intraday Trading: INTERNAL/docs/analysis/INTRADAY_TRADING_ANALYSIS.md
+      - Mathematical Foundations: INTERNAL/docs/analysis/MATHEMATICAL_FOUNDATIONS.md
+      - Mechanical Verification: INTERNAL/docs/analysis/MECHANICAL_VERIFICATION.md
+      - Non-Determinism Audit: INTERNAL/docs/analysis/NON_DETERMINISM_AUDIT.md
+      - Optimization Architecture: INTERNAL/docs/analysis/OPTIMIZATION_ARCHITECTURE.md
+      - Optimization Engine: INTERNAL/docs/analysis/OPTIMIZATION_ENGINE.md
+      - Optimization Engine Analysis: INTERNAL/docs/analysis/OPTIMIZATION_ENGINE_ANALYSIS.md
+      - Option C Comparison: INTERNAL/docs/analysis/OPTION_C_COMPARISON.md
+      - Plan Validation: INTERNAL/docs/analysis/PLAN_VALIDATION_SUMMARY.md
+      - Production Verification: INTERNAL/docs/analysis/PRODUCTION_VERIFICATION_COMPLETE.md
+      - Quick Undefined Check: INTERNAL/docs/analysis/QUICK_UNDEFINED_CHECK.md
+      - Registry Patching Analysis: INTERNAL/docs/analysis/REGISTRY_PATCHING_COMPLETE_ANALYSIS.md
+      - Registry Patching Flow: INTERNAL/docs/analysis/REGISTRY_PATCHING_FLOW_ANALYSIS.md
+      - Reorganization Check: INTERNAL/docs/analysis/REORGANIZATION_ISSUES_CHECK.md
+      - Reorganization Plan: INTERNAL/docs/analysis/REORGANIZATION_PLAN.md
+      - SST Compliance: INTERNAL/docs/analysis/SST_COMPLIANCE_CHECKLIST.md
+      - SST Determinism: INTERNAL/docs/analysis/SST_DETERMINISM_GUARANTEES.md
+      - SST Remaining Work: INTERNAL/docs/analysis/SST_REMAINING_WORK.md
+      - Test Files Organization: INTERNAL/docs/analysis/TEST_FILES_ORGANIZATION.md
+      - Verification Checklist: INTERNAL/docs/analysis/VERIFICATION_CHECKLIST.md
+      - Yahoo Finance: INTERNAL/docs/analysis/YAHOO_FINANCE_INTEGRATION.md
+    - Audits:
+      - Determinism Audit: INTERNAL/docs/audits/2026-01-08-determinism-and-tracking-audit.md
+      - Comprehensive Audit: INTERNAL/docs/audits/comprehensive-code-audit-2026-01.md
+    - Cleanup:
+      - Auto Fixer Backup: INTERNAL/docs/cleanup/AUTO_FIXER_BACKUP_FIX.md
+      - Auto Fixer Fixes: INTERNAL/docs/cleanup/AUTO_FIXER_FIXES.md
+      - Avoid Long Runs: INTERNAL/docs/cleanup/AVOID_LONG_RUNS.md
+      - Backward Compatibility: INTERNAL/docs/cleanup/BACKWARD_COMPATIBILITY.md
+      - Code Review Bugs: INTERNAL/docs/cleanup/CODE_REVIEW_BUGS.md
+      - Config Centralization: INTERNAL/docs/cleanup/CONFIG_FINAL_CENTRALIZATION_REPORT.md
+      - Config Model Verification: INTERNAL/docs/cleanup/CONFIG_MODEL_SETTINGS_VERIFICATION.md
+      - Config Pipeline Safety: INTERNAL/docs/cleanup/CONFIG_PIPELINE_SAFETY_VERIFICATION.md
+      - Deeper Leak Fix: INTERNAL/docs/cleanup/DEEPER_LEAK_FIX.md
+      - Empty Dirs Cleanup: INTERNAL/docs/cleanup/EMPTY_DIRECTORIES_CLEANUP.md
+      - F821 Fix Strategy: INTERNAL/docs/cleanup/F821_FIX_STRATEGY.md
+      - Final Leakage Summary: INTERNAL/docs/cleanup/FINAL_LEAKAGE_SUMMARY.md
+      - Final Verification: INTERNAL/docs/cleanup/FINAL_VERIFICATION.md
+      - Fwd Ret Leakage: INTERNAL/docs/cleanup/FWD_RET_20D_LEAKAGE_ANALYSIS.md
+      - Hardening Checklist: INTERNAL/docs/cleanup/HARDENING_CHECKLIST.md
+      - Hardening Summary: INTERNAL/docs/cleanup/HARDENING_SUMMARY.md
+      - Leakage: INTERNAL/docs/cleanup/leakage.md
+      - Leakage Fixed Next Steps: INTERNAL/docs/cleanup/LEAKAGE_FIXED_NEXT_STEPS.md
+      - Mechanical Verification: INTERNAL/docs/cleanup/MECHANICAL_VERIFICATION.md
+      - Production Verification: INTERNAL/docs/cleanup/PRODUCTION_VERIFICATION_COMPLETE.md
+      - Quick Start Clean: INTERNAL/docs/cleanup/QUICK_START_CLEAN_BASELINE.md
+      - Refactoring Summary: INTERNAL/docs/cleanup/REFACTORING_SUMMARY_INTERNAL.md
+      - Round 3 Temporal Fix: INTERNAL/docs/cleanup/ROUND3_TEMPORAL_OVERLAP_FIX.md
+      - Silent Failures: INTERNAL/docs/cleanup/SILENT_FAILURES_FIXES.md
+      - Target Is Leaked: INTERNAL/docs/cleanup/TARGET_IS_LEAKED.md
+      - Target Leakage Clarification: INTERNAL/docs/cleanup/TARGET_LEAKAGE_CLARIFICATION.md
+      - Test Files Organization: INTERNAL/docs/cleanup/TEST_FILES_ORGANIZATION.md
+      - Verification Report: INTERNAL/docs/cleanup/VERIFICATION_REPORT.md
+    - Config:
+      - Additional Centralization: INTERNAL/docs/config/CONFIG_ADDITIONAL_CENTRALIZATION_OPPORTUNITIES.md
+      - Backups Analysis: INTERNAL/docs/config/CONFIG_BACKUPS_ANALYSIS.md
+      - Centralization Complete: INTERNAL/docs/config/CONFIG_CENTRALIZATION_COMPLETE.md
+      - Changelog Defaults: INTERNAL/docs/config/CONFIG_CHANGELOG_DEFAULTS.md
+      - Cleanup Summary: INTERNAL/docs/config/CONFIG_CLEANUP_SUMMARY.md
+      - Locations Audit: INTERNAL/docs/config/CONFIG_LOCATIONS_AUDIT.md
+      - Reproducibility: INTERNAL/docs/config/CONFIG_REPRODUCIBILITY_CENTRALIZATION.md
+      - SST Verification: INTERNAL/docs/config/CONFIG_SST_VERIFICATION.md
+      - Domain Agnostic Audit: INTERNAL/docs/config/domain_agnostic_audit_config_training.md
+      - SST Compliance: INTERNAL/docs/config/SST_COMPLIANCE_CHECKLIST.md
+      - SST Determinism: INTERNAL/docs/config/SST_DETERMINISM_GUARANTEES.md
+      - SST Remaining Work: INTERNAL/docs/config/SST_REMAINING_WORK.md
+    - Development:
+      - Determinism SST Reference: INTERNAL/docs/development/DETERMINISM_SST_REFERENCE.md
+      - Error Handling: INTERNAL/docs/development/ERROR_HANDLING.md
+      - Provenance Schema: INTERNAL/docs/development/PROVENANCE_SCHEMA.md
+      - Testing Patterns: INTERNAL/docs/development/TESTING_PATTERNS.md
+    - Features:
+      - Importance Stability Implementation: INTERNAL/docs/features/FEATURE_IMPORTANCE_STABILITY_IMPLEMENTATION.md
+      - Importance Stability Integration: INTERNAL/docs/features/FEATURE_IMPORTANCE_STABILITY_INTEGRATION_PLAN.md
+    - Foundations:
+      - "C++ Integration": INTERNAL/docs/foundations/C++_INTEGRATION.md
+      - Mathematical Foundations: INTERNAL/docs/foundations/MATHEMATICAL_FOUNDATIONS.md
+    - Optimization:
+      - HPC Status: INTERNAL/docs/optimization/HPC_OPTIMIZATION_STATUS.md
+      - Observability Logging: INTERNAL/docs/optimization/OBSERVABILITY_LOGGING_ADDED.md
+      - Optimization Engine: INTERNAL/docs/optimization/OPTIMIZATION_ENGINE.md
+    - Planning:
+      - Adaptive Intelligence: INTERNAL/docs/planning/ADAPTIVE_INTELLIGENCE_ARCHITECTURE.md
+      - Adaptive Leakage Controller: INTERNAL/docs/planning/ADAPTIVE_LEAKAGE_CONTROLLER.md
+      - Adaptive Portfolio: INTERNAL/docs/planning/ADAPTIVE_REALTIME_PORTFOLIO_OPTIMIZATION.md
+      - Alpha Enhancement: INTERNAL/docs/planning/ALPHA_ENHANCEMENT_ROADMAP.md
+      - Config Refactor: INTERNAL/docs/planning/CONFIG_REFACTOR_PLAN.md
+      - CILS: INTERNAL/docs/planning/CONTINUOUS_INTEGRATED_LEARNING_SYSTEM.md
+      - Determinism Code Verification: INTERNAL/docs/planning/determinism_tracking_code_verification.md
+      - Determinism Verification Plan: INTERNAL/docs/planning/determinism_tracking_verification_plan.md
+      - Distributed Training: INTERNAL/docs/planning/DISTRIBUTED_TRAINING_ARCHITECTURE.md
+      - Enhanced Rebalancing: INTERNAL/docs/planning/ENHANCED_REBALANCING_TRADING_PLAN.md
+      - Feature Registry Complete: INTERNAL/docs/planning/FEATURE_REGISTRY_COMPLETE.md
+      - Feature Registry Design: INTERNAL/docs/planning/FEATURE_REGISTRY_DESIGN.md
+      - Feature Registry Phase 1: INTERNAL/docs/planning/FEATURE_REGISTRY_PHASE1_COMPLETE.md
+      - Feature Registry Phase 2: INTERNAL/docs/planning/FEATURE_REGISTRY_PHASE2_COMPLETE.md
+      - Feature Registry Phase 3: INTERNAL/docs/planning/FEATURE_REGISTRY_PHASE3_COMPLETE.md
+      - Feature Registry Phase 4: INTERNAL/docs/planning/FEATURE_REGISTRY_PHASE4_COMPLETE.md
+      - CS Ranking Assessment: INTERNAL/docs/planning/implementation_assessment_cross_sectional_ranking.md
+      - Implementation Status: INTERNAL/docs/planning/IMPLEMENTATION_STATUS.md
+      - Integrated Learning: INTERNAL/docs/planning/INTEGRATED_LEARNING_FEEDBACK_LOOP.md
+      - Main Training Outline: INTERNAL/docs/planning/MAIN_TRAINING_SCRIPT_OUTLINE.md
+      - NVLink Architecture: INTERNAL/docs/planning/NVLINK_READY_ARCHITECTURE.md
+      - Path Configuration: INTERNAL/docs/planning/PATH_CONFIGURATION_GUIDELINES.md
+      - Performance Optimization: INTERNAL/docs/planning/PERFORMANCE_OPTIMIZATION_PLAN.md
+      - Pressure Test Roadmap: INTERNAL/docs/planning/PRESSURE_TEST_IMPLEMENTATION_ROADMAP.md
+      - Pressure Test Upgrades: INTERNAL/docs/planning/PRESSURE_TEST_UPGRADES.md
+      - Systemd Deployment: INTERNAL/docs/planning/SYSTEMD_DEPLOYMENT_PLAN.md
+      - Target Ranking Integration: INTERNAL/docs/planning/TARGET_RANKING_SELECTION_INTEGRATION.md
+    - References:
+      - INTERNAL/docs/references/README.md
+      - Deterministic Patterns: INTERNAL/docs/references/DETERMINISTIC_PATTERNS.md
+      - Exceptions Matrix: INTERNAL/docs/references/EXCEPTIONS_MATRIX.md
+      - Function Signature Changes: INTERNAL/docs/references/FUNCTION_SIGNATURE_CHANGES.md
+      - Registry Autopatch: INTERNAL/docs/references/REGISTRY_AUTOPATCH_SYSTEM.md
+      - Registry Overlay: INTERNAL/docs/references/REGISTRY_OVERLAY_STRUCTURE.md
+      - SST Solutions: INTERNAL/docs/references/SST_SOLUTIONS.md
+      - Write Locations Matrix: INTERNAL/docs/references/WRITE_LOCATIONS_MATRIX.md
+    - Research:
+      - Additional Feature Selection: INTERNAL/docs/research/ADDITIONAL_FEATURE_SELECTION_MODELS.md
+      - Additional Models Quickstart: INTERNAL/docs/research/ADDITIONAL_MODELS_QUICKSTART.md
+      - All Models Enabled: INTERNAL/docs/research/ALL_MODELS_ENABLED.md
+      - Complete Feature Selection: INTERNAL/docs/research/COMPLETE_FEATURE_SELECTION_MODELS.md
+      - Dataset Sizing: INTERNAL/docs/research/DATASET_SIZING_STRATEGY.md
+      - Feature Importance Fix: INTERNAL/docs/research/FEATURE_IMPORTANCE_FIX.md
+      - GPU Multi-Model: INTERNAL/docs/research/GPU_SETUP_MULTI_MODEL.md
+      - Importance R2 Weighting: INTERNAL/docs/research/IMPORTANCE_R2_WEIGHTING.md
+      - Importance Score Interpretation: INTERNAL/docs/research/IMPORTANCE_SCORE_INTERPRETATION.md
+      - Model Enabling: INTERNAL/docs/research/MODEL_ENABLING_RECOMMENDATIONS.md
+      - Target Discovery Update: INTERNAL/docs/research/TARGET_DISCOVERY_UPDATE.md
+      - Target Model Pipeline: INTERNAL/docs/research/TARGET_MODEL_PIPELINE_ANALYSIS.md
+      - Target Recommendations: INTERNAL/docs/research/TARGET_RECOMMENDATIONS.md
+      - Target to Feature Workflow: INTERNAL/docs/research/TARGET_TO_FEATURE_WORKFLOW.md
+    - Reviews:
+      - Determinism Completion: INTERNAL/docs/reviews/determinism-fixes-completion-summary.md
+      - Determinism Final Status: INTERNAL/docs/reviews/determinism-fixes-final-status.md
+      - Determinism Status: INTERNAL/docs/reviews/determinism-fixes-status.md
+      - Determinism Phase 2 Completion: INTERNAL/docs/reviews/determinism-phase2-fixes-completion.md
+      - Determinism Phase 2 Verification: INTERNAL/docs/reviews/determinism-phase2-fixes-verification.md
+      - SST Analysis: INTERNAL/docs/reviews/determinism-sst-analysis-2026-01.md
+      - SST Phase 2 Analysis: INTERNAL/docs/reviews/determinism-sst-analysis-phase2-2026-01.md
+      - SST Prioritized Fixes: INTERNAL/docs/reviews/determinism-sst-prioritized-fixes.md
+      - Registry Autopatch Determinism: INTERNAL/docs/reviews/registry-autopatch-determinism-issues.md
+      - Registry Autopatch Fixes: INTERNAL/docs/reviews/registry-autopatch-fixes-summary.md
+      - Registry Autopatch Invariants: INTERNAL/docs/reviews/registry-autopatch-invariants.md
+      - Registry Autopatch Issues: INTERNAL/docs/reviews/registry-autopatch-issues-analysis.md
+      - Registry Autopatch Review: INTERNAL/docs/reviews/registry-autopatch-review-findings.md
+    - Technical:
+      - SST Audit: INTERNAL/docs/technical/SST_AUDIT_2026-01-09.md
+      - SST Candidates: INTERNAL/docs/technical/SST_CANDIDATES_ANALYSIS.md
+      - SST Enum Migration: INTERNAL/docs/technical/SST_ENUM_MIGRATION_SAFETY_ANALYSIS.md
+      - SST Identity Flow: INTERNAL/docs/technical/SST_IDENTITY_FLOW.md
+      - SST Solutions Reference: INTERNAL/docs/technical/SST_SOLUTIONS_REFERENCE.md
+    - Training Routing:
+      - INTERNAL/docs/training_routing/README.md
+      - Architecture: INTERNAL/docs/training_routing/ARCHITECTURE.md
+      - Errors Fixed: INTERNAL/docs/training_routing/ERRORS_FIXED.md
+      - Hardening Summary: INTERNAL/docs/training_routing/HARDENING_SUMMARY.md
+      - Implementation Status: INTERNAL/docs/training_routing/IMPLEMENTATION_STATUS.md
+      - Integration Summary: INTERNAL/docs/training_routing/INTEGRATION_SUMMARY.md
+      - Known Issues: INTERNAL/docs/training_routing/KNOWN_ISSUES.md
+      - Master Training Plan: INTERNAL/docs/training_routing/MASTER_TRAINING_PLAN.md
+      - Phase 3 Integration: INTERNAL/docs/training_routing/PHASE3_INTEGRATION.md
+      - Routing README: INTERNAL/docs/training_routing/README_ROUTING.md
+      - Routing System Summary: INTERNAL/docs/training_routing/ROUTING_SYSTEM_SUMMARY.md
+      - System Summary: INTERNAL/docs/training_routing/SYSTEM_SUMMARY.md
+    - Verification:
+      - Horizon Conversion: INTERNAL/docs/verification/horizon_conversion_verification.md
+    - Miscellaneous:
+      - Config Audit: INTERNAL/docs/CONFIG_AUDIT.md
+      - Detailed Release Notes: INTERNAL/docs/DETAILED_RELEASE_NOTES.md
+      - Dual Ranking Analysis: INTERNAL/docs/2026-01-08-dual-ranking-gate-impact-analysis.md
+      - Additional Issues Scan: INTERNAL/docs/additional-issues-scan-2026-01.md
+      - Boundary Audit: INTERNAL/docs/boundary_audit.md
+      - Dev Mode Relaxation: INTERNAL/docs/dev-mode-relaxation-and-coverage-fixes-2026-01.md
+      - Determinism Hardening: INTERNAL/docs/fixes-determinism-hardening-phase1-2026-01.md
+      - Dev Mode Coverage: INTERNAL/docs/fixes-dev-mode-coverage-review-2026-01.md
+      - Registry Lag Investigation: INTERNAL/docs/fixes-registry-lag-bars-zero-investigation-2026-01.md
+      - CS Ranking Assessment: INTERNAL/docs/implementation_assessment_cross_sectional_ranking.md
+      - Journal Log: INTERNAL/docs/journallog.md
+      - Legal Assessment: INTERNAL/docs/LEGAL_ASSESSMENT.md
+      - Legal Suite Update: INTERNAL/docs/LEGAL_SUITE_UPDATE_REQUIRED.md
+      - Naming Issues: INTERNAL/docs/naming_issues_found.md
+      - Organization Summary: INTERNAL/docs/ORGANIZATION_SUMMARY.md
+      - Performance Audit: INTERNAL/docs/PERFORMANCE_AUDIT_README.md
+      - Registry Patch Autonomy: INTERNAL/docs/REGISTRY_PATCH_AUTONOMY_ASSESSMENT.md
+      - Registry Patch System: INTERNAL/docs/REGISTRY_PATCH_SYSTEM.md
+      - Registry Patch Simple: INTERNAL/docs/REGISTRY_PATCH_SYSTEM_SIMPLE.md
+      - Review Issues: INTERNAL/docs/review-issues-dev-mode-coverage-changes-2026-01.md
+      - Review Plan: INTERNAL/docs/review-plan-dev-mode-coverage-changes-2026-01.md
+    - Tools:
+      - INTERNAL/docs/tools/README.md
+
+  # ── Part 10: Implementation Plans ────────────────────────────
+  - Implementation Plans:
+    - Architecture Remediation:
+      - Master Plan: claude-plans/architecture-remediation-master.md
+      - "Phase 1: Run Identity": claude-plans/arch-phase1-run-identity.md
+      - "Phase 2: Thread Safety": claude-plans/arch-phase2-thread-safety.md
+      - "Phase 3: Fingerprinting": claude-plans/arch-phase3-fingerprinting.md
+      - "Phase 4: Error Handling": claude-plans/arch-phase4-error-handling.md
+      - "Phase 5: Config Hierarchy": claude-plans/arch-phase5-config-hierarchy.md
+      - "Phase 6: Data Consistency": claude-plans/arch-phase6-data-consistency.md
+      - "Phase 7: Stage Boundaries": claude-plans/arch-phase7-stage-boundaries.md
+      - "Phase 8: API Design": claude-plans/arch-phase8-api-design.md
+    - Cross-Sectional Ranking:
+      - Master Plan: claude-plans/cross-sectional-ranking-objective.md
+      - "Phase 1: Targets": claude-plans/cs-ranking-phase1-targets.md
+      - "Phase 2: Batching": claude-plans/cs-ranking-phase2-batching.md
+      - "Phase 3: Losses": claude-plans/cs-ranking-phase3-losses.md
+      - "Phase 4: Metrics": claude-plans/cs-ranking-phase4-metrics.md
+      - "Phase 5: Integration": claude-plans/cs-ranking-phase5-integration.md
+    - Raw OHLCV:
+      - Sequence Mode: claude-plans/raw-ohlcv-sequence-mode.md
+      - Sequence Data: claude-plans/raw-ohlcv-sequence-data.md
+    - Live Trading Inference:
+      - Master Plan: claude-plans/live-trading-inference-master.md
+      - "Phase 0: Barrier Gate": claude-plans/live-phase0-barrier-gate-fix.md
+      - "Phase 1: Input Mode": claude-plans/live-phase1-input-mode-awareness.md
+      - "Phase 2: Raw OHLCV": claude-plans/live-phase2-raw-ohlcv-inference.md
+      - "Phase 3: Testing": claude-plans/live-phase3-testing.md
+      - "Phase 4: CS Ranking": claude-plans/live-phase4-cs-ranking-inference.md
+    - Dashboard:
+      - Integration Master: claude-plans/dashboard-integration-master.md
+      - Bug Fixes: claude-plans/dashboard-bug-fixes-master.md
+      - Fixes Round 2: claude-plans/dashboard-fixes-round2-master.md
+      - Functionality Audit: claude-plans/dashboard-functionality-audit.md
+      - Hardening Master: claude-plans/dashboard-hardening-master.md
+      - UI Completion: claude-plans/dashboard-ui-completion-master.md
+      - "Phase 1: Bridge Fixes": claude-plans/dashboard-phase1-bridge-fixes.md
+      - "Phase 1: Contracts": claude-plans/dashboard-phase1-contracts.md
+      - "Phase 2: Bridge API": claude-plans/dashboard-phase2-bridge-api.md
+      - "Phase 2: Panic Prevention": claude-plans/dashboard-phase2-panic-prevention.md
+      - "Phase 3: Defensive Coding": claude-plans/dashboard-phase3-defensive-coding.md
+      - "Phase 3: Rust Wiring": claude-plans/dashboard-phase3-rust-wiring.md
+      - "Phase 4: Training Monitor": claude-plans/dashboard-phase4-training-monitor.md
+      - "R2 Phase 0: Fake Commands": claude-plans/dash-fixes-r2-phase0-fake-commands.md
+      - "R2 Phase 1: TUI Bugs": claude-plans/dash-fixes-r2-phase1-tui-bugs.md
+      - "R2 Phase 2: Bridge Bugs": claude-plans/dash-fixes-r2-phase2-bridge-bugs.md
+      - "R2 Phase 3: Configurability": claude-plans/dash-fixes-r2-phase3-configurability.md
+      - "R2 Phase 4: Minor Polish": claude-plans/dash-fixes-r2-phase4-minor-polish.md
+      - "R3 Cleanup": claude-plans/dash-fixes-r3-cleanup.md
+      - "Harden Phase 0: Critical": claude-plans/dash-harden-phase0-critical-fixes.md
+      - "Harden Phase 1: Safety": claude-plans/dash-harden-phase1-safety.md
+      - "Harden Phase 2: Chart Widget": claude-plans/dash-harden-phase2-chart-widget.md
+      - "Harden Phase 3: Trading": claude-plans/dash-harden-phase3-trading.md
+      - "Harden Phase 4: Training": claude-plans/dash-harden-phase4-training.md
+      - "Harden Phase 5: UX Polish": claude-plans/dash-harden-phase5-ux-polish.md
+      - "UI Phase 0: Launcher": claude-plans/ui-phase0-launcher-dashboard.md
+      - "UI Phase 1: Config Editor": claude-plans/ui-phase1-config-editor.md
+      - "UI Phase 2: Log Viewer": claude-plans/ui-phase2-log-viewer.md
+      - "UI Phase 3: Service Manager": claude-plans/ui-phase3-service-manager.md
+      - "UI Phase 4: Model Selector": claude-plans/ui-phase4-model-selector.md
+      - "UI Phase 5: File Browser": claude-plans/ui-phase5-file-browser.md
+      - "UI Phase 6: Settings": claude-plans/ui-phase6-settings.md
+    - Modular Decomposition:
+      - Master Plan: claude-plans/modular-decomposition-master.md
+      - "Phase 0: Regex": claude-plans/mod-phase0-regex-optimization.md
+      - "Phase 1: Model Evaluation": claude-plans/mod-phase1-model-evaluation.md
+      - "Phase 2: Diff Telemetry": claude-plans/mod-phase2-diff-telemetry.md
+      - "Phase 3: Orchestrator": claude-plans/mod-phase3-orchestrator.md
+      - "Phase 4: Data Loader": claude-plans/mod-phase4-data-loader.md
+      - "Phase 5: Documentation": claude-plans/mod-phase5-documentation.md
+    - Multi-Horizon Training:
+      - Master Plan: claude-plans/multi-horizon-training-master.md
+      - "Phase 8: Training": claude-plans/phase8-multi-horizon-training.md
+      - "Phase 9: Cross-Horizon Ensemble": claude-plans/phase9-cross-horizon-ensemble.md
+      - "Phase 10: Multi-Interval": claude-plans/phase10-multi-interval-experiments.md
+    - Other Plans:
+      - Interval Agnostic Pipeline: claude-plans/interval-agnostic-pipeline.md
+      - Interval Remediation: claude-plans/interval-remediation.md
+      - Codebase Bug Fixes: claude-plans/codebase-bug-fixes-master.md
+      - Code Review Remediation: claude-plans/code-review-remediation.md
+      - Column Projection Optimization: claude-plans/column-projection-optimization.md
+      - Lazy Data Loading: claude-plans/lazy-data-loading-implementation.md
+      - MCP Servers: claude-plans/mcp-servers-implementation.md
+      - Pipeline Runtime Fixes: claude-plans/pipeline-runtime-fixes.md
+      - Polars Memory Optimization: claude-plans/polars-native-memory-optimization.md
+      - Streaming Concat: claude-plans/streaming-concat-optimization.md
+      - Tech Debt Reduction: claude-plans/tech-debt-reduction-plan.md
+
+  # ── Part 11: Appendices ──────────────────────────────────────
+  - Appendices:
+    - Changelog: CHANGELOG.md
+    - Daily Changelogs:
+      - DOCS/02_reference/changelog/README.md
+      - General: DOCS/02_reference/changelog/general.md
+      - "2025-12-10": DOCS/02_reference/changelog/2025-12-10.md
+      - "2025-12-11": DOCS/02_reference/changelog/2025-12-11.md
+      - "2025-12-12": DOCS/02_reference/changelog/2025-12-12.md
+      - "2025-12-13": DOCS/02_reference/changelog/2025-12-13.md
+      - "2025-12-13 Duration": DOCS/02_reference/changelog/2025-12-13-duration-system.md
+      - "2025-12-13 Feature Selection": DOCS/02_reference/changelog/2025-12-13-feature-selection-unification.md
+      - "2025-12-13 Fingerprint": DOCS/02_reference/changelog/2025-12-13-fingerprint-tracking.md
+      - "2025-12-13 SST": DOCS/02_reference/changelog/2025-12-13-single-source-of-truth.md
+      - "2025-12-13 SST Enforcement": DOCS/02_reference/changelog/2025-12-13-sst-enforcement-design.md
+      - "2025-12-14 Drift Tracking": DOCS/02_reference/changelog/2025-12-14-drift-tracking-enhancements.md
+      - "2025-12-14 Execution": DOCS/02_reference/changelog/2025-12-14-execution-modules.md
+      - "2025-12-14 Feature Selection": DOCS/02_reference/changelog/2025-12-14-feature-selection-and-config-fixes.md
+      - "2025-12-14 IP Assignment": DOCS/02_reference/changelog/2025-12-14-ip-assignment-signed.md
+      - "2025-12-14 Lookahead": DOCS/02_reference/changelog/2025-12-14-lookahead-bias-fixes.md
+      - "2025-12-14 Telemetry": DOCS/02_reference/changelog/2025-12-14-telemetry-system.md
+      - "2025-12-15 CatBoost GPU": DOCS/02_reference/changelog/2025-12-15-catboost-gpu-fixes.md
+      - "2025-12-15 Consolidated": DOCS/02_reference/changelog/2025-12-15-consolidated.md
+      - "2025-12-15 Metrics Rename": DOCS/02_reference/changelog/2025-12-15-metrics-rename.md
+      - "2025-12-16 Diff Telemetry": DOCS/02_reference/changelog/2025-12-16-diff-telemetry-integration.md
+      - "2025-12-16 Feature Selection": DOCS/02_reference/changelog/2025-12-16-feature-selection-structure.md
+      - "2025-12-16 Pipeline Fixes": DOCS/02_reference/changelog/2025-12-16-training-pipeline-fixes.md
+      - "2025-12-17 Reproducibility": DOCS/02_reference/changelog/2025-12-17-feature-selection-reproducibility.md
+      - "2025-12-17 Field Name": DOCS/02_reference/changelog/2025-12-17-field-name-fix.md
+      - "2025-12-17 Metric Deltas": DOCS/02_reference/changelog/2025-12-17-metric-deltas-in-diff-artifacts.md
+      - "2025-12-17 Pipeline Audit": DOCS/02_reference/changelog/2025-12-17-training-pipeline-audit-fixes.md
+      - "2025-12-18 Modularization": DOCS/02_reference/changelog/2025-12-18-code-modularization.md
+      - "2025-12-18 Reorganization": DOCS/02_reference/changelog/2025-12-18-training-folder-reorganization.md
+      - "2025-12-19 Feature Selection": DOCS/02_reference/changelog/2025-12-19-feature-selection-error-fixes.md
+      - "2025-12-19 Target Evaluation": DOCS/02_reference/changelog/2025-12-19-target-evaluation-config-fixes.md
+      - "2025-12-19 Target First": DOCS/02_reference/changelog/2025-12-19-target-first-structure-migration.md
+      - "2025-12-20 CatBoost Overfitting": DOCS/02_reference/changelog/2025-12-20-catboost-fail-fast-for-overfitting.md
+      - "2025-12-20 Elastic Net": DOCS/02_reference/changelog/2025-12-20-elastic-net-graceful-failure-handling.md
+      - "2025-12-20 Feature Selection Org": DOCS/02_reference/changelog/2025-12-20-feature-selection-output-organization-and-elastic-net-fail-fast.md
+      - "2025-12-20 Path Resolution": DOCS/02_reference/changelog/2025-12-20-path-resolution-fix.md
+      - "2025-12-20 Threading": DOCS/02_reference/changelog/2025-12-20-threading-feature-pruning-path-fixes.md
+      - "2025-12-20 Untrack Data": DOCS/02_reference/changelog/2025-12-20-untrack-data-processing-folder.md
+      - "2025-12-21 Early Stopping": DOCS/02_reference/changelog/2025-12-21-catboost-early-stopping-fix.md
+      - "2025-12-21 CatBoost Formatting": DOCS/02_reference/changelog/2025-12-21-catboost-formatting-and-cv-skip-fixes.md
+      - "2025-12-21 CatBoost Logging": DOCS/02_reference/changelog/2025-12-21-catboost-logging-and-n-features-extraction-fixes.md
+      - "2025-12-21 CatBoost Diagnostics": DOCS/02_reference/changelog/2025-12-21-catboost-performance-diagnostics.md
+      - "2025-12-21 CatBoost Verbosity": DOCS/02_reference/changelog/2025-12-21-catboost-verbosity-and-reproducibility-fixes.md
+      - "2025-12-21 Feature Routing": DOCS/02_reference/changelog/2025-12-21-feature-selection-routing-and-training-view-tracking.md
+      - "2025-12-21 Run Comparison": DOCS/02_reference/changelog/2025-12-21-run-comparison-fixes.md
+      - "2025-12-21 Training Plan": DOCS/02_reference/changelog/2025-12-21-training-plan-model-families-and-feature-summary-fixes.md
+      - "2025-12-22 Boruta": DOCS/02_reference/changelog/2025-12-22-boruta-performance-optimizations.md
+      - "2025-12-22 CatBoost CV": DOCS/02_reference/changelog/2025-12-22-catboost-cv-efficiency-with-early-stopping.md
+      - "2025-12-22 CatBoost TypeError": DOCS/02_reference/changelog/2025-12-22-catboost-formatting-typeerror-fix.md
+      - "2025-12-22 CatBoost Overfitting": DOCS/02_reference/changelog/2025-12-22-catboost-overfitting-detection-and-legacy-structure-removal.md
+      - "2025-12-22 Performance Audit": DOCS/02_reference/changelog/2025-12-22-performance-audit-system.md
+      - "2025-12-22 Results Org": DOCS/02_reference/changelog/2025-12-22-training-results-organization-fixes.md
+      - "2025-12-22 Trend Indent": DOCS/02_reference/changelog/2025-12-22-trend-analyzer-indentation-fix.md
+      - "2025-12-22 Trend Operator": DOCS/02_reference/changelog/2025-12-22-trend-analyzer-operator-precedence-fix.md
+      - "2025-12-23 Boruta CatBoost": DOCS/02_reference/changelog/2025-12-23-boruta-catboost-error-handling-fixes.md
+      - "2025-12-23 Model Timing": DOCS/02_reference/changelog/2025-12-23-comprehensive-model-timing-metrics.md
+      - "2025-12-23 Dominance": DOCS/02_reference/changelog/2025-12-23-dominance-quarantine-and-leakage-safety.md
+      - "2025-12-23 Mode Selection": DOCS/02_reference/changelog/2025-12-23-mode-selection-and-pipeline-safety-fixes.md
+      - "2025-12-23 Pipeline Integrity": DOCS/02_reference/changelog/2025-12-23-training-pipeline-integrity-and-canonical-layout.md
+      - "2025-12-23 Pipeline Org": DOCS/02_reference/changelog/2025-12-23-training-pipeline-organization-and-config-fixes.md
+      - "2026-01-03 Run Identity": DOCS/02_reference/changelog/2026-01-03-deterministic-run-identity.md
+      - "2026-01-04 GPU Determinism": DOCS/02_reference/changelog/2026-01-04-gpu-cpu-determinism-config-fix.md
+      - "2026-01-04 Reproducibility": DOCS/02_reference/changelog/2026-01-04-reproducibility-file-output-fixes.md
+      - "2026-01-04 Run Identity Wiring": DOCS/02_reference/changelog/2026-01-04-run-identity-wiring-and-path-organization.md
+      - "2026-01-05 Determinism Seeds": DOCS/02_reference/changelog/2026-01-05-determinism-and-seed-fixes.md
+      - "2026-01-06 Determinism Tracking": DOCS/02_reference/changelog/2026-01-06-determinism-tracking-comprehensive.md
+      - "2026-01-06 SST Stage Factory": DOCS/02_reference/changelog/2026-01-06-sst-stage-factory-identity-passthrough.md
+      - "2026-01-07 Stage Parity": DOCS/02_reference/changelog/2026-01-07-stage-parity-and-sample-limits.md
+      - "2026-01-08 License": DOCS/02_reference/changelog/2026-01-08-commercial-license-clarity-and-support.md
+      - "2026-01-08 Config Dump": DOCS/02_reference/changelog/2026-01-08-comprehensive-config-dump-and-hardware-docs.md
+      - "2026-01-08 Config Cleanup": DOCS/02_reference/changelog/2026-01-08-config-cleanup-and-symlink-removal.md
+      - "2026-01-08 Cross Stage": DOCS/02_reference/changelog/2026-01-08-cross-stage-issue-fixes.md
+      - "2026-01-08 Dual Ranking": DOCS/02_reference/changelog/2026-01-08-dual-ranking-filtering-mismatch-fix.md
+      - "2026-01-08 Feature Repro": DOCS/02_reference/changelog/2026-01-08-feature-selection-reproducibility-fixes.md
+      - "2026-01-08 File Locking": DOCS/02_reference/changelog/2026-01-08-file-locking-for-json-writes.md
+      - "2026-01-08 File Overwrite": DOCS/02_reference/changelog/2026-01-08-file-overwrite-and-plan-creation-fixes.md
+      - "2026-01-08 Manifest": DOCS/02_reference/changelog/2026-01-08-manifest-and-determinism-fixes.md
+      - "2026-01-08 Metrics Cleanup": DOCS/02_reference/changelog/2026-01-08-metrics-cleanup-and-run-hash.md
+      - "2026-01-08 Metrics SHA256": DOCS/02_reference/changelog/2026-01-08-metrics-sha256-structure-fix.md
+      - "2026-01-08 README": DOCS/02_reference/changelog/2026-01-08-readme-improvements-for-credibility.md
+      - "2026-01-08 Routing": DOCS/02_reference/changelog/2026-01-08-task-aware-routing-fix.md
+      - "2026-01-09 Registry Patch": DOCS/02_reference/changelog/2026-01-09-registry-patch-system.md
+      - "2026-01-09 Scoring Gates": DOCS/02_reference/changelog/2026-01-09-scoring-eligibility-gates-and-view-cache-fix.md
+      - "2026-01-09 SST Consistency": DOCS/02_reference/changelog/2026-01-09-sst-consistency-fixes.md
+      - "2026-01-09 SST Enum": DOCS/02_reference/changelog/2026-01-09-sst-enum-migration.md
+      - "2026-01-10 Non-Determinism": DOCS/02_reference/changelog/2026-01-10-complete-non-determinism-elimination.md
+      - "2026-01-10 Feature Importances": DOCS/02_reference/changelog/2026-01-10-feature-importances-and-artifacts-manifest-fixes.md
+      - "2026-01-10 Output Structure": DOCS/02_reference/changelog/2026-01-10-output-structure-cleanup-and-backward-compatibility.md
+      - "2026-01-10 Repro Tracking": DOCS/02_reference/changelog/2026-01-10-reproducibility-tracking-fixes.md
+      - "2026-01-10 Root Cause": DOCS/02_reference/changelog/2026-01-10-root-cause-fixes-feature-importances-artifacts-boruta-replicate-folders.md
+      - "2026-01-11 Determinism SST": DOCS/02_reference/changelog/2026-01-11-determinism-sst-error-handling-cleanup.md
+      - "2026-01-15 Path Fingerprint": DOCS/02_reference/changelog/2026-01-15-path-fingerprint-catboost-fixes.md
+      - "2026-01-16 Policy Cap": DOCS/02_reference/changelog/2026-01-16-policy-cap-unified-system.md
+      - "2026-01-17 Run Hash": DOCS/02_reference/changelog/2026-01-17-run-hash-fallback-fix.md
+      - "2026-01-17 Run ID Lookup": DOCS/02_reference/changelog/2026-01-17-run-id-lookup-from-manifest-fix.md
+      - "2026-01-17 Run ID Normalization": DOCS/02_reference/changelog/2026-01-17-run-id-normalization-and-organization.md
+      - "2026-01-18 Code Review": DOCS/02_reference/changelog/2026-01-18-training-pipeline-code-review-phase2.md
+      - "2026-01-19 Threading": DOCS/02_reference/changelog/2026-01-19-threading-and-determinism-fixes.md
+      - "2026-01 Determinism Hardening": DOCS/02_reference/changelog/2026-01-determinism-hardening-phase1.md

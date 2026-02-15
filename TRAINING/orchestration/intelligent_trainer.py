@@ -1486,7 +1486,6 @@ class IntelligentTrainer(PipelineStageMixin):
                         raise ValueError(error_msg)
                     
                     sample_symbol = self.symbols[0]
-                    from TRAINING.ranking.target_ranker import discover_targets
                     targets_dict = discover_targets(sample_symbol, self.data_dir)
                     # FIX ISSUE-003: Sort for determinism
                     targets = sorted(targets_dict.keys())[:top_n_targets]  # Limit to top_n, sorted for determinism
@@ -2551,7 +2550,7 @@ class IntelligentTrainer(PipelineStageMixin):
             target_families=target_families_map if target_families_map else None,  # Per-target families from plan
             routing_decisions=routing_decisions_for_training,  # Pass routing decisions
             run_identity=training_identity,  # SST: Pass identity for reproducibility tracking
-            experiment_config=self.experiment_config,  # SST: For fallback identity creation
+            experiment_config=self._exp_yaml_sst,  # SST: Raw YAML dict (not ExperimentConfig dataclass) so downstream get_input_mode/get_raw_sequence_config can detect pipeline.input_mode
             # Lazy loading parameters (Phase 4 memory optimization)
             data_loader=data_loader,  # UnifiedDataLoader instance (or None if eager)
             symbols=self.symbols if lazy_loading_enabled else None,  # Required for lazy loading
