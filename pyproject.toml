@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Commercial
-# Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC
+# Copyright (c) 2024-2026 Fox ML Infrastructure LLC
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]

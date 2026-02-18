@@ -2,7 +2,7 @@ FOXML CORE — COMMERCIAL LICENSE
 
 Version 1.0 — Effective February 17, 2026
 
-Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC.
+Copyright (c) 2024-2026 Fox ML Infrastructure LLC.
 All rights reserved.
 
 This software is dual-licensed. You may use it under either:
@@ -30,7 +30,7 @@ license, you have NO license to use, copy, modify, or distribute this software.
    "Licensee" means the individual or legal entity that has executed a
    commercial license agreement with the Copyright Holder.
 
-   "Copyright Holder" means Jennifer Lewis / Fox ML Infrastructure LLC.
+   "Copyright Holder" means Fox ML Infrastructure LLC.
 
    "Authorized Users" means the Licensee's employees and contractors who
    are bound by confidentiality obligations no less restrictive than those
@@ -141,8 +141,9 @@ license, you have NO license to use, copy, modify, or distribute this software.
 10. ENFORCEMENT AND SETTLEMENT
 
     a) UNAUTHORIZED USE: If you are found to be using this Software in
-       violation of both the AGPL-3.0-or-later and without a valid
-       commercial license, this constitutes willful copyright infringement.
+       violation of the AGPL-3.0-or-later and without a valid commercial
+       license, the Copyright Holder will treat and pursue such use as
+       willful copyright infringement under applicable law.
 
     b) SETTLEMENT OFFER: The Copyright Holder is willing to settle
        unauthorized use claims for:
@@ -177,7 +178,7 @@ license, you have NO license to use, copy, modify, or distribute this software.
        funds or damages award. For the avoidance of doubt, this bounty
        applies only to tips that lead to actual monetary recovery.
 
-    e) EVIDENCE REQUIREMENTS: To qualify for the whistleblower bounty,
+    d) EVIDENCE REQUIREMENTS: To qualify for the whistleblower bounty,
        the reporting individual must provide sufficient evidence to
        substantiate the claim. Acceptable forms of evidence include,
        but are not limited to:
@@ -212,7 +213,7 @@ license, you have NO license to use, copy, modify, or distribute this software.
        action. The Copyright Holder is not obligated to pursue every
        report and reserves sole discretion over enforcement decisions.
 
-    d) STATUTE OF LIMITATIONS: The Copyright Holder reserves the right to
+    e) STATUTE OF LIMITATIONS: The Copyright Holder reserves the right to
        pursue claims for unauthorized use for the maximum period permitted
        by applicable law.
 
@@ -274,12 +275,14 @@ license, you have NO license to use, copy, modify, or distribute this software.
 
     For commercial licensing inquiries:
 
-      Jennifer Lewis / Fox ML Infrastructure LLC
+      Fox ML Infrastructure LLC
+      Attn: Jennifer Lewis
       Email: jenn.lewis5789@gmail.com
       LinkedIn: https://www.linkedin.com/in/jennifer-l-3434b3315
 
     To report unauthorized use (whistleblower bounty applies):
 
+      Fox ML Infrastructure LLC
       Email: jenn.lewis5789@gmail.com
       Subject line: "FoxML License Enforcement Report"
       All reports are treated as strictly confidential.

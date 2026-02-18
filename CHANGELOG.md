@@ -8,8 +8,10 @@ All notable changes to FoxML Core will be documented in this file.
 
 #### Changed
 - **Strengthened commercial license** (LICENSE-COMMERCIAL v1.0) — Expanded from 7 sections to 16: added formal definitions, termination clauses, audit rights, confidentiality obligations, assignment/change-of-control restrictions, governing law (Texas), severability, liability cap, and financial application risk disclaimer
-- **Standardized copyright entity** — Unified to "Jennifer Lewis / Fox ML Infrastructure LLC" across LICENSE, LICENSE-COMMERCIAL, pyproject.toml, Cargo.toml, NOTICE, and copyright header templates
+- **Clarified copyright holder entity** — Copyright holder is now unambiguously "Fox ML Infrastructure LLC" across LICENSE, LICENSE-COMMERCIAL, pyproject.toml, Cargo.toml, NOTICE, and copyright header templates (removes prior "Jennifer Lewis / Fox ML Infrastructure LLC" ambiguity about whether copyright is held by the individual or the LLC)
 - **Updated SPDX identifiers** — Changed from `OR Commercial` to `OR LicenseRef-Commercial` for SPDX spec compliance in header templates
+- **Softened enforcement language** — Section 10(a) now states the Copyright Holder "will treat and pursue" unauthorized use as willful infringement rather than declaring it "constitutes" willful infringement (a legal conclusion for courts to make)
+- **Fixed Section 10 subsection ordering** — Evidence requirements and statute of limitations subsections now correctly lettered (d) and (e)
 
 #### Added
 - **NOTICE file** — Dual-license summary and enforcement notice at repository root

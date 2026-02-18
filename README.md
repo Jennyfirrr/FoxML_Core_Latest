@@ -4,6 +4,9 @@
 
 ## License & Enforcement
 
+**© 2024-2026 Fox ML Infrastructure LLC. All rights reserved.**
+**U.S. Copyright Registration Case No. 1-15101732111** — Registered with the U.S. Copyright Office as a Literary Work.
+
 **This software is dual-licensed:** [AGPL-3.0-or-later](LICENSE) **or** [Commercial](LICENSE-COMMERCIAL). If you use this software without complying with the AGPL (including the requirement to publish your source code for any network-accessible deployment) and without a commercial license, you are infringing copyright.
 
 ### Unauthorized Use — Settlement Terms

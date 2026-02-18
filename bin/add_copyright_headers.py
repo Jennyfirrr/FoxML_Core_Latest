@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Commercial
-# Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC
+# Copyright (c) 2024-2026 Fox ML Infrastructure LLC
 
 """
 Add copyright headers to files missing them.
@@ -16,14 +16,14 @@ import re
 
 # Standard header for Python files
 PYTHON_HEADER = """# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Commercial
-# Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC
+# Copyright (c) 2024-2026 Fox ML Infrastructure LLC
 
 """
 
 # Standard header for shell scripts
 SHELL_HEADER = """#!/bin/bash
 # SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Commercial
-# Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC
+# Copyright (c) 2024-2026 Fox ML Infrastructure LLC
 
 """
 
