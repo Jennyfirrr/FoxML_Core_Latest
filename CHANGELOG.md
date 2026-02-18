@@ -2,6 +2,28 @@
 
 All notable changes to FoxML Core will be documented in this file.
 
+## 2026-02-17
+
+### Licensing
+
+#### Changed
+- **Strengthened commercial license** (LICENSE-COMMERCIAL v1.0) — Expanded from 7 sections to 16: added formal definitions, termination clauses, audit rights, confidentiality obligations, assignment/change-of-control restrictions, governing law (Texas), severability, liability cap, and financial application risk disclaimer
+- **Standardized copyright entity** — Unified to "Jennifer Lewis / Fox ML Infrastructure LLC" across LICENSE, LICENSE-COMMERCIAL, pyproject.toml, Cargo.toml, NOTICE, and copyright header templates
+- **Updated SPDX identifiers** — Changed from `OR Commercial` to `OR LicenseRef-Commercial` for SPDX spec compliance in header templates
+
+#### Added
+- **NOTICE file** — Dual-license summary and enforcement notice at repository root
+- **LICENSE preamble** — Project-specific copyright and dual-license notice before AGPL-3.0 text
+- **Whistleblower bounty clause** — 50% of flat fee + 25% of revenue recovery for confidential reports of unauthorized commercial use (LICENSE-COMMERCIAL Section 10c)
+- **Enforcement specifics** — References 17 U.S.C. Section 504 statutory damages for willful infringement, clarifies Net Revenue calculation from date of first unauthorized use
+
+### Repository
+
+#### Changed
+- **Added `.claude/` to `.gitignore`** — Claude Code working files (plans, skills, prompts, settings) removed from git tracking; 107 files untracked
+- **Added license field to Cargo.toml** — Dashboard Rust crate now declares AGPL-3.0-or-later license and authors
+- **Added `license-files` to pyproject.toml** — Declares LICENSE, LICENSE-COMMERCIAL, and NOTICE as license files in Python package metadata
+
 ## 2026-02-14
 
 ### Documentation

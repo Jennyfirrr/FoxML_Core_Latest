@@ -1,6 +1,9 @@
 FOXML CORE — COMMERCIAL LICENSE
 
-Copyright (c) 2024-2026 Jennifer Lewis. All rights reserved.
+Version 1.0 — Effective February 17, 2026
+
+Copyright (c) 2024-2026 Jennifer Lewis / Fox ML Infrastructure LLC.
+All rights reserved.
 
 This software is dual-licensed. You may use it under either:
 
@@ -9,63 +12,241 @@ This software is dual-licensed. You may use it under either:
 
   2. This Commercial License, obtained by written agreement with the copyright holder.
 
--------------------------------------------------------------------------------
+If you do not comply with the AGPL-3.0-or-later and have not obtained a commercial
+license, you have NO license to use, copy, modify, or distribute this software.
 
-COMMERCIAL LICENSE TERMS
+===============================================================================
 
-1. GRANT OF LICENSE
+                         COMMERCIAL LICENSE TERMS
 
-   Upon execution of a commercial license agreement and payment of applicable
-   fees, the copyright holder grants the licensee a non-exclusive,
-   non-transferable, worldwide license to use, modify, and deploy FoxML Core
-   in proprietary and commercial applications without the source-disclosure
-   obligations of the AGPL-3.0.
+===============================================================================
 
-2. SCOPE
+1. DEFINITIONS
 
-   The commercial license covers:
-   - Integration into proprietary products and services
-   - Internal business use without source-code disclosure
-   - Deployment as part of network services (SaaS) without AGPL obligations
-   - Redistribution as part of a larger proprietary work
+   "Software" means FoxML Core, including all source code, object code,
+   documentation, configuration files, training artifacts, model schemas,
+   and any updates or modifications provided under this license.
+
+   "Licensee" means the individual or legal entity that has executed a
+   commercial license agreement with the Copyright Holder.
+
+   "Copyright Holder" means Jennifer Lewis / Fox ML Infrastructure LLC.
+
+   "Authorized Users" means the Licensee's employees and contractors who
+   are bound by confidentiality obligations no less restrictive than those
+   in this license, up to the number specified in the commercial agreement.
+
+   "Derivative Work" means any work that is based on, incorporates, or is
+   derived from the Software, including but not limited to modified versions,
+   extensions, integrations, and works that link to or call the Software.
+
+   "Net Revenue" means gross revenue derived from use of the Software or any
+   Derivative Work, less only sales taxes and government-mandated fees.
+
+2. GRANT OF LICENSE
+
+   Upon execution of a commercial license agreement and payment of all
+   applicable fees, the Copyright Holder grants the Licensee a non-exclusive,
+   non-transferable (except as set forth in Section 6), worldwide, revocable
+   license to:
+
+   a) Use and modify the Software for internal business purposes;
+   b) Deploy the Software as part of the Licensee's products and services,
+      including network/SaaS deployments, without the source-disclosure
+      obligations of the AGPL-3.0;
+   c) Distribute the Software solely as an integrated component of the
+      Licensee's larger proprietary works (not as a standalone product);
+   d) Create Derivative Works for the Licensee's own use and deployment.
 
 3. RESTRICTIONS
 
-   The commercial license does NOT grant the right to:
-   - Sublicense or resell the software as a standalone product
-   - Remove or alter copyright notices
-   - Claim authorship of the original work
+   The Licensee shall NOT:
 
-4. FEES
+   a) Sublicense, resell, rent, lease, or otherwise transfer the Software
+      as a standalone product or service;
+   b) Remove, alter, or obscure any copyright, trademark, or attribution
+      notices in the Software;
+   c) Claim authorship or ownership of the original Software;
+   d) Use the Software to create a competing product or service that is
+      substantially similar in purpose and functionality to FoxML Core;
+   e) Permit access to the Software by anyone other than Authorized Users;
+   f) Use the Software in any manner that violates applicable law.
 
-   Commercial license fees are determined on a per-agreement basis.
-   Contact the copyright holder for pricing.
+4. FEES AND PAYMENT
 
-5. ENFORCEMENT AND SETTLEMENT
+   Commercial license fees are determined on a per-agreement basis and are
+   due as specified in the executed commercial license agreement. All fees
+   are non-refundable. Failure to pay fees when due constitutes a material
+   breach and grounds for immediate termination.
 
-   If you are found to be using this software in violation of both the AGPL-3.0
-   and without a valid commercial license, the copyright holder is willing to
-   settle for 1% of gross revenue derived from use of the software plus a flat
-   fee of $250,000 USD, in lieu of pursuing full statutory damages.
+5. INTELLECTUAL PROPERTY
 
-   This settlement offer is made in good faith and does not limit the copyright
-   holder's right to pursue all available legal remedies.
+   a) The Copyright Holder retains all right, title, and interest in and to
+      the Software, including all intellectual property rights therein.
+   b) The Licensee retains ownership of its own Derivative Works, subject to
+      the Copyright Holder's underlying rights in the Software.
+   c) The Licensee's models, training outputs, predictions, and trading
+      results produced by the Software belong to the Licensee. The Copyright
+      Holder claims no rights over the Licensee's data or output.
 
-6. WARRANTY DISCLAIMER
+6. ASSIGNMENT AND CHANGE OF CONTROL
 
-   THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
-   WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF,
-   OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   SOFTWARE.
+   This license is personal to the Licensee and may not be assigned or
+   transferred without the prior written consent of the Copyright Holder,
+   which shall not be unreasonably withheld. Any change of control of the
+   Licensee (including merger, acquisition, or sale of substantially all
+   assets) shall require the Copyright Holder's written consent for the
+   license to continue. Any purported assignment without consent is void.
 
-7. CONTACT
+7. CONFIDENTIALITY
 
-   For commercial licensing inquiries:
-     Jennifer Lewis
-     Email: jenn.lewis5789@gmail.com
-     LinkedIn: https://www.linkedin.com/in/jennifer-l-3434b3315
+   The Licensee shall treat the Software's source code, architecture,
+   algorithms, and any proprietary documentation as confidential information.
+   The Licensee shall not disclose such information to any third party except
+   to Authorized Users on a need-to-know basis. This obligation survives
+   termination of this license.
 
--------------------------------------------------------------------------------
+8. AUDIT RIGHTS
+
+   The Copyright Holder may, upon 30 days' written notice and no more than
+   once per calendar year, audit the Licensee's use of the Software to
+   verify compliance with this license. The Licensee shall cooperate with
+   such audits in good faith. If an audit reveals material non-compliance,
+   the Licensee shall bear the reasonable cost of the audit and promptly
+   cure the non-compliance or pay the applicable fees.
+
+9. TERMINATION
+
+   a) TERMINATION FOR BREACH: The Copyright Holder may terminate this
+      license immediately upon written notice if the Licensee materially
+      breaches any term of this license and fails to cure such breach
+      within 30 days of receiving written notice of the breach.
+
+   b) TERMINATION FOR NON-PAYMENT: The Copyright Holder may terminate
+      this license immediately upon written notice if the Licensee fails
+      to pay any fees when due and does not cure such failure within 15
+      days of receiving written notice.
+
+   c) EFFECT OF TERMINATION: Upon termination, the Licensee shall
+      immediately cease all use of the Software, destroy all copies in
+      its possession or control, and certify such destruction in writing
+      within 30 days. Termination does not relieve the Licensee of any
+      obligation to pay fees accrued prior to termination.
+
+   d) SURVIVAL: Sections 3 (Restrictions), 5 (Intellectual Property),
+      7 (Confidentiality), 10 (Enforcement), 11 (Warranty Disclaimer),
+      12 (Limitation of Liability), and 13 (Governing Law) shall survive
+      termination of this license.
+
+10. ENFORCEMENT AND SETTLEMENT
+
+    a) UNAUTHORIZED USE: If you are found to be using this Software in
+       violation of both the AGPL-3.0-or-later and without a valid
+       commercial license, this constitutes willful copyright infringement.
+
+    b) SETTLEMENT OFFER: The Copyright Holder is willing to settle
+       unauthorized use claims for:
+
+         (i)   A flat fee of $250,000 USD; PLUS
+         (ii)  1% to 10% of gross revenue derived from use of the
+               Software, calculated from the date of first unauthorized
+               use through the date of settlement. The exact percentage
+               shall be determined at the sole discretion of the
+               Copyright Holder based on the nature, scope, and duration
+               of the unauthorized use.
+
+       This settlement offer is made in good faith and does not limit the
+       Copyright Holder's right to pursue all available legal remedies,
+       including but not limited to statutory damages under 17 U.S.C.
+       Section 504 (up to $150,000 per work infringed for willful
+       infringement), injunctive relief, and attorney's fees.
+
+    c) WHISTLEBLOWER BOUNTY: If an individual provides information that
+       leads to a successful enforcement action or settlement against an
+       unauthorized user of the Software, the Copyright Holder will pay
+       that individual a bounty equal to:
+
+         (i)   50% of the flat fee recovered (i.e., $125,000 USD from
+               the standard settlement); PLUS
+         (ii)  25% of the gross revenue portion recovered (i.e., 25% of
+               the 1%-10% gross revenue settlement amount).
+
+       The identity of the reporting individual will be kept strictly
+       confidential by the Copyright Holder. This bounty is payable
+       within 60 days of the Copyright Holder's receipt of settlement
+       funds or damages award. For the avoidance of doubt, this bounty
+       applies only to tips that lead to actual monetary recovery.
+
+    d) STATUTE OF LIMITATIONS: The Copyright Holder reserves the right to
+       pursue claims for unauthorized use for the maximum period permitted
+       by applicable law.
+
+11. WARRANTY DISCLAIMER
+
+    THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+    THE COPYRIGHT HOLDER DOES NOT WARRANT THAT THE SOFTWARE WILL BE
+    ERROR-FREE, UNINTERRUPTED, OR FREE OF HARMFUL COMPONENTS.
+
+    THE SOFTWARE IS NOT DESIGNED OR INTENDED FOR USE IN ANY APPLICATION
+    WHERE FAILURE COULD LEAD TO DEATH, PERSONAL INJURY, OR SEVERE
+    FINANCIAL LOSS. THE LICENSEE ASSUMES ALL RISK ASSOCIATED WITH USE
+    OF THE SOFTWARE IN TRADING, INVESTMENT, OR OTHER FINANCIAL APPLICATIONS.
+
+12. LIMITATION OF LIABILITY
+
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY INDIRECT,
+    INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS
+    OF PROFITS, REVENUE, DATA, OR USE, WHETHER IN AN ACTION OF CONTRACT,
+    TORT, OR OTHERWISE, ARISING FROM OR RELATED TO THIS LICENSE OR THE
+    USE OF THE SOFTWARE, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED
+    OF THE POSSIBILITY OF SUCH DAMAGES.
+
+    THE COPYRIGHT HOLDER'S TOTAL AGGREGATE LIABILITY UNDER THIS LICENSE
+    SHALL NOT EXCEED THE FEES ACTUALLY PAID BY THE LICENSEE DURING THE
+    12-MONTH PERIOD IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO THE
+    CLAIM.
+
+13. GOVERNING LAW AND DISPUTE RESOLUTION
+
+    This license shall be governed by and construed in accordance with
+    the laws of the United States of America and the State of Texas,
+    without regard to conflict of law principles.
+
+    Any dispute arising out of or relating to this license shall be
+    resolved exclusively in the state or federal courts located in
+    Travis County, Texas. The Licensee consents to the personal
+    jurisdiction of such courts.
+
+14. SEVERABILITY
+
+    If any provision of this license is held to be invalid, illegal, or
+    unenforceable, the remaining provisions shall continue in full force
+    and effect. The invalid provision shall be modified to the minimum
+    extent necessary to make it valid and enforceable while preserving
+    its original intent.
+
+15. ENTIRE AGREEMENT
+
+    This license, together with any executed commercial license agreement,
+    constitutes the entire agreement between the parties with respect to
+    the Software and supersedes all prior negotiations, representations,
+    and agreements. No modification of this license shall be effective
+    unless in writing and signed by the Copyright Holder.
+
+16. CONTACT
+
+    For commercial licensing inquiries:
+
+      Jennifer Lewis / Fox ML Infrastructure LLC
+      Email: jenn.lewis5789@gmail.com
+      LinkedIn: https://www.linkedin.com/in/jennifer-l-3434b3315
+
+    To report unauthorized use (whistleblower bounty applies):
+
+      Email: jenn.lewis5789@gmail.com
+      Subject line: "FoxML License Enforcement Report"
+      All reports are treated as strictly confidential.
+
+===============================================================================

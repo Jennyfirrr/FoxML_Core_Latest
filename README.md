@@ -1,6 +1,6 @@
 # FoxML Core — ML Cross-Sectional Infrastructure
 
-> **License Enforcement Notice:** This software is dual-licensed under AGPL-3.0-or-later and a commercial license. If you are found to be in violation of the licensing terms, the author is willing to settle for **1% of gross revenue** derived from use of the software **plus a flat fee of $250,000 USD**. For commercial licensing inquiries, contact **jenn.lewis5789@gmail.com**.
+> **License Enforcement Notice:** This software is dual-licensed under AGPL-3.0-or-later and a commercial license. Unauthorized use will be pursued. Settlement terms: **$250,000 USD flat fee + 1-10% of gross revenue** from date of first unauthorized use. **Whistleblower bounty:** Know a company using FoxML without a license? Report it confidentially to **jenn.lewis5789@gmail.com** — earn **50% of the flat fee ($125K) + 25% of the gross revenue recovery**. See [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) for full terms.
 
 **FoxML is research-grade ML infrastructure with deterministic strict mode + full fingerprint lineage. It assumes prior experience with Python, Linux, and quantitative workflows. Some stuff may not work properly, i had a breakdown and wasnt able to test some stuff.**
 
