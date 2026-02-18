@@ -162,58 +162,7 @@ license, you have NO license to use, copy, modify, or distribute this software.
        Section 504 (up to $150,000 per work infringed for willful
        infringement), injunctive relief, and attorney's fees.
 
-    c) WHISTLEBLOWER BOUNTY: If an individual provides information that
-       leads to a successful enforcement action or settlement against an
-       unauthorized user of the Software, the Copyright Holder will pay
-       that individual a bounty equal to:
-
-         (i)   50% of the flat fee recovered (i.e., $125,000 USD from
-               the standard settlement); PLUS
-         (ii)  25% of the gross revenue portion recovered (i.e., 25% of
-               the 1%-10% gross revenue settlement amount).
-
-       The identity of the reporting individual will be kept strictly
-       confidential by the Copyright Holder. This bounty is payable
-       within 60 days of the Copyright Holder's receipt of settlement
-       funds or damages award. For the avoidance of doubt, this bounty
-       applies only to tips that lead to actual monetary recovery.
-
-    d) EVIDENCE REQUIREMENTS: To qualify for the whistleblower bounty,
-       the reporting individual must provide sufficient evidence to
-       substantiate the claim. Acceptable forms of evidence include,
-       but are not limited to:
-
-         (i)    Screenshots or recordings of the Software running in
-                a production, staging, or development environment at
-                the reported organization;
-         (ii)   Internal documentation, wikis, Confluence pages, Slack
-                messages, emails, or tickets referencing FoxML, FoxML
-                Core, or identifiable components of the Software;
-         (iii)  Source code, configuration files, or deployment artifacts
-                showing integration of the Software (e.g., imports from
-                TRAINING/, CONFIG/, LIVE_TRADING/ modules, references to
-                FoxML-specific configuration keys or SST helpers);
-         (iv)   Git logs, CI/CD pipeline outputs, or container images
-                containing the Software or Derivative Works;
-         (v)    Job postings, internal presentations, or technical
-                specifications that reference the Software by name or
-                describe its distinctive architecture (e.g., 3-stage
-                intelligent pipeline, deterministic strict mode,
-                fingerprint lineage);
-         (vi)   Network traffic captures, API responses, or log files
-                showing FoxML-specific identifiers, artifact schemas,
-                or error messages;
-         (vii)  Testimony from current or former employees with direct
-                knowledge of the Software's use, supported by at least
-                one piece of corroborating documentary evidence.
-
-       The Copyright Holder will evaluate all evidence in good faith.
-       Partial or circumstantial evidence may still qualify if, taken
-       together, it establishes a reasonable basis for an enforcement
-       action. The Copyright Holder is not obligated to pursue every
-       report and reserves sole discretion over enforcement decisions.
-
-    e) STATUTE OF LIMITATIONS: The Copyright Holder reserves the right to
+    c) STATUTE OF LIMITATIONS: The Copyright Holder reserves the right to
        pursue claims for unauthorized use for the maximum period permitted
        by applicable law.
 
@@ -280,11 +229,10 @@ license, you have NO license to use, copy, modify, or distribute this software.
       Email: jenn.lewis5789@gmail.com
       LinkedIn: https://www.linkedin.com/in/jennifer-l-3434b3315
 
-    To report unauthorized use (whistleblower bounty applies):
+    To report unauthorized use:
 
       Fox ML Infrastructure LLC
       Email: jenn.lewis5789@gmail.com
       Subject line: "FoxML License Enforcement Report"
-      All reports are treated as strictly confidential.
 
 ===============================================================================

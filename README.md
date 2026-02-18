@@ -16,33 +16,6 @@ If you or your organization are found using FoxML without a valid license:
 - **$250,000 USD flat fee** plus **1-10% of gross revenue** derived from use of the software, from date of first unauthorized use through settlement
 - The Copyright Holder reserves the right to pursue **full statutory damages** under 17 U.S.C. Section 504 (up to **$150,000 per work** for willful infringement), **injunctive relief**, and **attorney's fees**
 
-### Whistleblower Bounty Program
-
-**Know a company using FoxML without a license?** Report it confidentially and earn:
-
-- **$125,000** (50% of the flat fee recovery)
-- **25% of the gross revenue recovery** (25% of the 1-10% gross revenue settlement)
-
-**Your identity will be kept strictly confidential.** Reports are evaluated in good faith. Acceptable evidence includes:
-
-- **Screenshots or recordings** of FoxML running in production, staging, or dev environments (e.g., terminal output showing FoxML pipeline stages, dashboard TUI, training logs)
-- **Internal communications** — Slack messages, emails, wiki/Confluence pages, Jira/Linear tickets, or meeting notes referencing FoxML, FoxML Core, or its components
-- **Source code or config files** showing FoxML integration — look for:
-  - Imports from `TRAINING/`, `CONFIG/`, `LIVE_TRADING/`, `DATA_PROCESSING/` modules
-  - FoxML-specific config keys (e.g., `pipeline.determinism.base_seed`, SST helper calls like `get_cfg()`, `get_target_dir()`, `write_atomic_json()`)
-  - Directory structures matching FoxML's layout (`RESULTS/runs/`, `stage=TARGET_RANKING/`, `stage=TRAINING/`)
-  - Model metadata files containing FoxML-specific fields (`model_meta.json`, `manifest.json`, `routing_decision.json`)
-- **Deployment artifacts** — Docker images, Kubernetes manifests, Terraform configs, or CI/CD pipelines (GitHub Actions, Jenkins, GitLab CI) that build, test, or deploy FoxML
-- **Git history** — commits, branches, or repos containing FoxML code, even if renamed or restructured
-- **Job postings or presentations** referencing FoxML by name, or describing its distinctive architecture: 3-stage intelligent pipeline, deterministic strict mode, fingerprint lineage, cross-sectional + symbol-specific dual-view training, 20 model families
-- **Output artifacts** — run manifests, fingerprint files, `config.resolved.json`, or model artifacts with FoxML's characteristic schema (SHA256 fingerprints, `run_id`, `RunIdentity`)
-- **Network traffic or logs** — API responses, error messages, or log files containing FoxML-specific identifiers or artifact schemas
-- **Testimony** from current or former employees with direct knowledge, supported by at least one piece of corroborating documentary evidence
-
-**Even partial evidence counts.** A single screenshot, a Slack message mentioning "FoxML", or a job posting describing the pipeline architecture may be enough to open an investigation. See [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) Section 10 for full legal terms.
-
-**Report unauthorized use:** [jenn.lewis5789@gmail.com](mailto:jenn.lewis5789@gmail.com) — Subject: "FoxML License Enforcement Report"
-
 ---
 
 **FoxML is research-grade ML infrastructure with deterministic strict mode + full fingerprint lineage. It assumes prior experience with Python, Linux, and quantitative workflows. As always, some parts are experimental and subject to breakage as work continues.**

@@ -2,6 +2,13 @@
 
 All notable changes to FoxML Core will be documented in this file.
 
+## 2026-02-18
+
+### Licensing
+
+#### Removed
+- **Whistleblower bounty program** — Removed bounty clauses from README, LICENSE-COMMERCIAL (Section 10c-d), and NOTICE file
+
 ## 2026-02-17
 
 ### Licensing
@@ -16,7 +23,6 @@ All notable changes to FoxML Core will be documented in this file.
 #### Added
 - **NOTICE file** — Dual-license summary and enforcement notice at repository root
 - **LICENSE preamble** — Project-specific copyright and dual-license notice before AGPL-3.0 text
-- **Whistleblower bounty clause** — 50% of flat fee + 25% of revenue recovery for confidential reports of unauthorized commercial use (LICENSE-COMMERCIAL Section 10c)
 - **Enforcement specifics** — References 17 U.S.C. Section 504 statutory damages for willful infringement, clarifies Net Revenue calculation from date of first unauthorized use
 
 ### Repository
