@@ -2,7 +2,7 @@
 
 ---
 
-- **Feel free to ask me questions as well, Im bored alot of the time and enjoy learning new methods or discussing my choices within the context of this repo.**
+- **Feel free to ask me questions as well, Im bored alot of the time and enjoy learning new methods or discussing my choices within the context of this repo. I dont really use much social media, so idk how to really communicate with people, but idk.**
 
 ## License & Enforcement
 
