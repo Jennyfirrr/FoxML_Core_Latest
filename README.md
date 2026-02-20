@@ -2,7 +2,7 @@
 
 ---
 
-**Feel free to ask me questions as well, Im bored alot of the time and enjoy learning new methods or discussing my choices within the context of this repo. I dont really use much social media, so idk how to really communicate with people, but idk.**
+**Feel free to ask me questions as well, Im bored alot of the time and enjoy learning new methods or discussing my choices within the context of this repo. I dont really use much social media, so idk how to really communicate with people, but idk. Work has stalled due to some personal issues. I have also shifted focus to getting better at timed coding within leetcode/hackerrank exams to try and get hired somewhere. Work will most likely resume when I get a better PC, or be indefinitly discontinued assuming a hedge fund hires me. Good luck!**
 
 ## License & Enforcement
 
